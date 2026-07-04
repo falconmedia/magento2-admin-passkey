@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!--
+        Configure and register the pre-auth open-action whitelist. Only the two
+        passkey login endpoints are opened; everything else keeps the native Admin
+        authentication check. Full action names use the adminpasskey router id.
+    -->
+    <type name="FalconMedia\AdminPasskey\Plugin\Backend\Authentication\AllowPasskeyLoginActions">
+        <arguments>
+            <argument name="openActions" xsi:type="array">
+                <item name="assertion_options" xsi:type="string">adminpasskey_login_options</item>
+                <item name="assertion_verify" xsi:type="string">adminpasskey_login_verify</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Backend\App\Action\Plugin\Authentication">
+        <plugin name="falconmedia_adminpasskey_allow_passkey_login_actions"
+                type="FalconMedia\AdminPasskey\Plugin\Backend\Authentication\AllowPasskeyLoginActions"
+                sortOrder="10"/>
+    </type>
+    <!--
+        Block native password login while the account/IP is locked out. The check
+        fails open and is suppressed while emergency recovery mode is active.
+    -->
+    <type name="Magento\Backend\Model\Auth">
+        <plugin name="falconmedia_adminpasskey_block_locked_admin_login"
+                type="FalconMedia\AdminPasskey\Plugin\Backend\Auth\BlockLockedAdminLogin"
+                sortOrder="20"/>
+    </type>
+    <!--
+        Actions that must never be redirected to the onboarding wizard, in addition
+        to the module's own routes (which the policy always exempts). Keeping the
+        native login/logout open guarantees an admin can always escape onboarding.
+    -->
+    <type name="FalconMedia\AdminPasskey\Model\Onboarding\OnboardingPolicy">
+        <arguments>
+            <argument name="alwaysAllowedActions" xsi:type="array">
+                <item name="login" xsi:type="string">adminhtml_auth_login</item>
+                <item name="logout" xsi:type="string">adminhtml_auth_logout</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

@@ -1,0 +1,19 @@
+<!--@subject {{trans "Your admin account has been temporarily locked"}} @-->
+<!--@vars {
+"var admin_name":"Admin name",
+"var locked_until":"Locked until",
+"var company_name":"Company name",
+"var support_email":"Support email",
+"var support_url":"Support URL",
+"var accent_color":"Accent color",
+"var footer_text":"Footer text"
+} @-->
+<body>
+    <p style="color:{{var accent_color}};font-weight:bold;">{{var company_name}}</p>
+    <p>{{trans "Hello %name," name=$admin_name}}</p>
+    <p>{{trans "Your administrator account has been temporarily locked after repeated failed login attempts."}}</p>
+    <p>{{trans "The lock is scheduled to lift at %until." until=$locked_until}}</p>
+    <p>{{trans "If this was not you, please review recent activity and contact support at %email." email=$support_email}}</p>
+    <hr/>
+    <p style="color:#888;font-size:12px;">{{var footer_text}}</p>
+</body>

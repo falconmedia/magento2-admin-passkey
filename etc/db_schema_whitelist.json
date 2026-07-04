@@ -1,0 +1,227 @@
+{
+    "falconmedia_adminpasskey_credential": {
+        "column": {
+            "entity_id": true,
+            "admin_user_id": true,
+            "credential_id": true,
+            "public_key": true,
+            "sign_count": true,
+            "transports": true,
+            "friendly_name": true,
+            "device_metadata": true,
+            "status": true,
+            "created_at": true,
+            "updated_at": true,
+            "last_used_at": true,
+            "revoked_at": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_CREDENTIAL_ADMIN_USER_ID": true,
+            "FALCONMEDIA_ADMINPASSKEY_CREDENTIAL_STATUS": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FALCONMEDIA_ADMINPASSKEY_CREDENTIAL_CREDENTIAL_ID": true,
+            "FALCONMDA_ADMPASSKEY_CREDENTIAL_ADM_USR_ID_ADM_USR_USR_ID": true
+        }
+    },
+    "falconmedia_adminpasskey_challenge": {
+        "column": {
+            "entity_id": true,
+            "admin_user_id": true,
+            "challenge": true,
+            "challenge_type": true,
+            "status": true,
+            "remote_ip": true,
+            "expires_at": true,
+            "consumed_at": true,
+            "created_at": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_CHALLENGE_ADMIN_USER_ID": true,
+            "FALCONMEDIA_ADMINPASSKEY_CHALLENGE_CHALLENGE_TYPE": true,
+            "FALCONMEDIA_ADMINPASSKEY_CHALLENGE_STATUS": true,
+            "FALCONMEDIA_ADMINPASSKEY_CHALLENGE_EXPIRES_AT": true,
+            "FALCONMEDIA_ADMINPASSKEY_CHALLENGE_CHALLENGE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FALCONMDA_ADMPASSKEY_CHALLENGE_ADM_USR_ID_ADM_USR_USR_ID": true
+        }
+    },
+    "falconmedia_adminpasskey_audit": {
+        "column": {
+            "entity_id": true,
+            "event_type": true,
+            "actor_admin_user_id": true,
+            "target_admin_user_id": true,
+            "severity": true,
+            "ip": true,
+            "user_agent": true,
+            "metadata": true,
+            "support_reference_id": true,
+            "created_at": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_AUDIT_EVENT_TYPE": true,
+            "FALCONMEDIA_ADMINPASSKEY_AUDIT_SEVERITY": true,
+            "FALCONMEDIA_ADMINPASSKEY_AUDIT_ACTOR_ADMIN_USER_ID": true,
+            "FALCONMEDIA_ADMINPASSKEY_AUDIT_TARGET_ADMIN_USER_ID": true,
+            "FALCONMEDIA_ADMINPASSKEY_AUDIT_SUPPORT_REFERENCE_ID": true,
+            "FALCONMEDIA_ADMINPASSKEY_AUDIT_CREATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FALCONMDA_ADMPASSKEY_AUDIT_ACTOR_ADM_USR_ID_ADM_USR_USR_ID": true,
+            "FALCONMDA_ADMPASSKEY_AUDIT_TARGET_ADM_USR_ID_ADM_USR_USR_ID": true
+        }
+    },
+    "falconmedia_adminpasskey_trusted_device": {
+        "column": {
+            "entity_id": true,
+            "admin_user_id": true,
+            "device_token_hash": true,
+            "label": true,
+            "metadata": true,
+            "status": true,
+            "first_seen_at": true,
+            "last_seen_at": true,
+            "expires_at": true,
+            "revoked_at": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_TRUSTED_DEVICE_ADMIN_USER_ID": true,
+            "FALCONMEDIA_ADMINPASSKEY_TRUSTED_DEVICE_STATUS": true,
+            "FALCONMEDIA_ADMINPASSKEY_TRUSTED_DEVICE_EXPIRES_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FALCONMEDIA_ADMINPASSKEY_TRUSTED_DEVICE_DEVICE_TOKEN_HASH": true,
+            "FALCONMDA_ADMPASSKEY_TRUSTED_DEVICE_ADM_USR_ID_ADM_USR_USR_ID": true
+        }
+    },
+    "falconmedia_adminpasskey_lockout": {
+        "column": {
+            "entity_id": true,
+            "admin_user_id": true,
+            "username": true,
+            "reason": true,
+            "failed_attempts": true,
+            "status": true,
+            "locked_until": true,
+            "unlocked_at": true,
+            "unlocked_by": true,
+            "metadata": true,
+            "created_at": true,
+            "ip": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_LOCKOUT_ADMIN_USER_ID": true,
+            "FALCONMEDIA_ADMINPASSKEY_LOCKOUT_USERNAME": true,
+            "FALCONMEDIA_ADMINPASSKEY_LOCKOUT_STATUS": true,
+            "FALCONMEDIA_ADMINPASSKEY_LOCKOUT_LOCKED_UNTIL": true,
+            "FALCONMEDIA_ADMINPASSKEY_LOCKOUT_CREATED_AT": true,
+            "FALCONMEDIA_ADMINPASSKEY_LOCKOUT_IP": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FALCONMDA_ADMPASSKEY_LOCKOUT_ADM_USR_ID_ADM_USR_USR_ID": true
+        }
+    },
+    "falconmedia_adminpasskey_recovery_state": {
+        "column": {
+            "entity_id": true,
+            "state": true,
+            "enabled_at": true,
+            "disabled_at": true,
+            "actor_admin_user_id": true,
+            "reason": true,
+            "metadata": true,
+            "updated_at": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_RECOVERY_STATE_STATE": true,
+            "FALCONMEDIA_ADMINPASSKEY_RECOVERY_STATE_ACTOR_ADMIN_USER_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FK_7A2A8C1025DC1C45B87B663DE2E8E631": true
+        }
+    },
+    "falconmedia_adminpasskey_diagnostics_report": {
+        "column": {
+            "entity_id": true,
+            "support_reference_id": true,
+            "status": true,
+            "files": true,
+            "counts": true,
+            "metadata": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_DIAGNOSTICS_REPORT_STATUS": true,
+            "FALCONMEDIA_ADMINPASSKEY_DIAGNOSTICS_REPORT_CREATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FALCONMEDIA_ADMINPASSKEY_DIAGNOSTICS_REPORT_SUPPORT_REFERENCE_ID": true
+        }
+    },
+    "falconmedia_adminpasskey_security_score_snapshot": {
+        "column": {
+            "entity_id": true,
+            "score": true,
+            "label": true,
+            "category_breakdown": true,
+            "recommendations": true,
+            "metadata": true,
+            "created_at": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_SECURITY_SCORE_SNAPSHOT_LABEL": true,
+            "FALCONMEDIA_ADMINPASSKEY_SECURITY_SCORE_SNAPSHOT_CREATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "falconmedia_adminpasskey_cleanup_log": {
+        "column": {
+            "entity_id": true,
+            "categories": true,
+            "counts": true,
+            "status": true,
+            "metadata": true,
+            "created_at": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_CLEANUP_LOG_STATUS": true,
+            "FALCONMEDIA_ADMINPASSKEY_CLEANUP_LOG_CREATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "falconmedia_adminpasskey_reminder": {
+        "column": {
+            "entity_id": true,
+            "admin_user_id": true,
+            "reminder_type": true,
+            "status": true,
+            "sent_at": true,
+            "metadata": true,
+            "created_at": true
+        },
+        "index": {
+            "FALCONMEDIA_ADMINPASSKEY_REMINDER_ADMIN_USER_ID": true,
+            "FALCONMEDIA_ADMINPASSKEY_REMINDER_REMINDER_TYPE": true,
+            "FALCONMEDIA_ADMINPASSKEY_REMINDER_STATUS": true,
+            "FALCONMEDIA_ADMINPASSKEY_REMINDER_SENT_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FALCONMDA_ADMPASSKEY_REMINDER_ADM_USR_ID_ADM_USR_USR_ID": true
+        }
+    }
+}

@@ -1,0 +1,64 @@
+<?php
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ *
+ * @var \FalconMedia\AdminPasskey\Block\Adminhtml\Passkey\Index $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+?>
+<?php // CSP-safe: rename/revoke actions are bound via data-mage-init; no inline JS is used. ?>
+<div class="adminpasskey-passkeys"
+     data-mage-init='<?= $escaper->escapeHtmlAttr($block->getMageInitJson()) ?>'>
+
+    <div class="adminpasskey-passkeys__toolbar">
+        <a class="action-primary" href="<?= $escaper->escapeUrl($block->getWizardUrl()) ?>">
+            <span><?= $escaper->escapeHtml(__('Add passkey')) ?></span>
+        </a>
+    </div>
+
+    <?php if (!$block->hasCredentials()): ?>
+        <p class="adminpasskey-passkeys__empty">
+            <?= $escaper->escapeHtml(__('You have no passkeys yet. Add one to sign in without a password.')) ?>
+        </p>
+    <?php else: ?>
+        <table class="data-grid adminpasskey-passkeys__table">
+            <thead>
+                <tr>
+                    <th><?= $escaper->escapeHtml(__('Name')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Device')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Created At')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Last Used At')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Status')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Actions')) ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($block->getCredentials() as $credential): ?>
+                    <?php $lastUsed = (string) $credential->getLastUsedAt(); ?>
+                    <tr data-entity-id="<?= (int) $credential->getId() ?>">
+                        <td data-role="friendly-name">
+                            <?= $escaper->escapeHtml($block->getDisplayName($credential)) ?>
+                        </td>
+                        <td><?= $escaper->escapeHtml($block->getDeviceSummary($credential)) ?></td>
+                        <td><?= $escaper->escapeHtml((string) $credential->getCreatedAt()) ?></td>
+                        <td><?= $escaper->escapeHtml($lastUsed !== '' ? $lastUsed : (string) __('Never')) ?></td>
+                        <td><?= $escaper->escapeHtml($block->getStatusLabel($credential)) ?></td>
+                        <td>
+                            <?php if ($block->isActive($credential)): ?>
+                                <button type="button" class="action-secondary" data-action="rename">
+                                    <span><?= $escaper->escapeHtml(__('Rename')) ?></span>
+                                </button>
+                                <button type="button" class="action-secondary" data-action="revoke">
+                                    <span><?= $escaper->escapeHtml(__('Revoke')) ?></span>
+                                </button>
+                            <?php else: ?>
+                                <span><?= $escaper->escapeHtml(__('—')) ?></span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</div>

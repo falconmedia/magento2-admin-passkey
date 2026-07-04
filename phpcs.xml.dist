@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<ruleset name="FalconMedia_AdminPasskey">
+    <description>Magento 2 coding standard for the FalconMedia_AdminPasskey module.</description>
+
+    <!-- Analyse the module directory this config lives in. -->
+    <file>.</file>
+
+    <!-- Never lint build artefacts. -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <!-- Reuse the Magento coding standard shipped with the project. -->
+    <rule ref="Magento2"/>
+
+    <arg name="extensions" value="php,phtml,xml"/>
+    <arg value="sp"/>
+</ruleset>

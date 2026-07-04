@@ -1,0 +1,36 @@
+{
+    "name": "falconmedia/magento2-admin-passkey",
+    "description": " Magento 2 Admin Passkey (WebAuthn) login with Magento 2FA fallback, trusted devices, lockouts, recovery, migration and health dashboards, diagnostics, security scoring, and audit logging. Admin UI only.",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "FalconMedia",
+            "email": "info@falconmedia.nl",
+            "homepage": "https://falconmedia.nl",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "magento/framework": "*",
+        "magento/module-backend": "*",
+        "magento/module-user": "*",
+        "magento/module-ui": "*",
+        "magento/module-two-factor-auth": "*"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "FalconMedia\\AdminPasskey\\": ""
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "FalconMedia\\AdminPasskey\\Test\\": "Test/"
+        }
+    }
+}

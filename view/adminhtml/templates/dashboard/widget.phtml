@@ -1,0 +1,67 @@
+<?php
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ *
+ * @var \FalconMedia\AdminPasskey\Block\Adminhtml\Dashboard\Widget $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+if (!$block->isWidgetEnabled()) {
+    return;
+}
+$accent = $block->getPrimaryAccentColor();
+$iconUrl = $block->getDashboardIconUrl();
+?>
+<section class="admin__page-section falconmedia-adminpasskey-dashboard-widget"
+         style="border-top:3px solid <?= $escaper->escapeHtmlAttr($accent) ?>;margin-bottom:2rem;">
+    <div class="admin__page-section-title">
+        <?php if ($iconUrl !== null): ?>
+            <img src="<?= $escaper->escapeUrl($iconUrl) ?>"
+                 alt="<?= $escaper->escapeHtmlAttr($block->getCompanyName()) ?>"
+                 class="falconmedia-adminpasskey-dashboard-widget__icon"
+                 style="height:24px;width:auto;vertical-align:middle;margin-right:.5rem;"/>
+        <?php endif; ?>
+        <span class="title">
+            <?= $escaper->escapeHtml(__('%1 Admin Passkey Security', $block->getCompanyName())) ?>
+        </span>
+    </div>
+
+    <div class="falconmedia-adminpasskey-dashboard-widget__grid"
+         style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;">
+        <?php foreach ($block->getCards() as $card): ?>
+            <div class="falconmedia-adminpasskey-card"
+                 data-card="<?= $escaper->escapeHtmlAttr($card->getId()) ?>"
+                 style="border:1px solid #e3e3e3;border-left:4px solid <?= $escaper->escapeHtmlAttr($accent) ?>;padding:1rem;background:#fff;">
+                <div class="falconmedia-adminpasskey-card__title" style="font-weight:600;margin-bottom:.5rem;">
+                    <?= $escaper->escapeHtml($card->getTitle()) ?>
+                </div>
+                <?php if ($card->getValue() !== null): ?>
+                    <div class="falconmedia-adminpasskey-card__value">
+                        <span class="<?= $escaper->escapeHtmlAttr($block->getStatusClass($card->getStatus())) ?>"
+                              style="font-size:1.5rem;font-weight:700;">
+                            <?= $escaper->escapeHtml($card->getValue()) ?>
+                        </span>
+                    </div>
+                <?php endif; ?>
+                <?php if ($card->getDescription() !== ''): ?>
+                    <div class="falconmedia-adminpasskey-card__description" style="color:#666;margin-top:.25rem;">
+                        <?= $escaper->escapeHtml($card->getDescription()) ?>
+                    </div>
+                <?php endif; ?>
+                <?php $links = $card->getLinks(); ?>
+                <?php if ($links !== []): ?>
+                    <ul class="falconmedia-adminpasskey-card__links"
+                        style="list-style:none;margin:.75rem 0 0;padding:0;">
+                        <?php foreach ($links as $link): ?>
+                            <li style="margin-bottom:.25rem;">
+                                <a href="<?= $escaper->escapeUrl($block->getCardUrl($link['route'])) ?>">
+                                    <?= $escaper->escapeHtml($link['label']) ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</section>

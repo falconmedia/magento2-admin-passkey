@@ -1,0 +1,661 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="adminpasskey" translate="label" type="text" sortOrder="510" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Admin Passkey</label>
+            <tab>security</tab>
+            <resource>FalconMedia_AdminPasskey::config</resource>
+
+            <group id="general" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General</label>
+                <comment>Master settings for the Admin Passkey security suite.</comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Admin Passkey</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Master switch for the Admin Passkey suite. When disabled, no passkey behaviour is active.</comment>
+                </field>
+            </group>
+
+            <group id="authentication_policy" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Authentication Policy</label>
+                <comment>Control how passkeys, passwords, and Magento 2FA interact on the Admin login.</comment>
+                <field id="passkey_first_login" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Passkey-First Login</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Show the passkey prompt first on the Admin login page when a passkey is available.</comment>
+                </field>
+                <field id="password_fallback_enabled" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Password Fallback</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Allow username and password login as a fallback. Disabling this can lock admins out; keep a recovery path.</comment>
+                </field>
+                <field id="two_fa_fallback_enabled" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Magento 2FA for Password Login</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Require Magento Two-Factor Authentication after username/password login. Passkey login always replaces 2FA and skips this step.</comment>
+                </field>
+            </group>
+
+            <group id="login_design" translate="label comment" type="text" sortOrder="22" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Login Page Design</label>
+                <comment>Choose the Admin login page layout. Copy fields for the selected layout appear in the subsections below.</comment>
+                <field id="layout" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Layout</label>
+                    <source_model>FalconMedia\AdminPasskey\Model\Config\Source\LoginDesignLayout</source_model>
+                    <comment>Spotlight is the default passkey-first card. Split Console and Command Deck show a branded side panel.</comment>
+                </field>
+            </group>
+
+            <group id="login_design_spotlight" translate="label comment" type="text" sortOrder="23" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Spotlight Layout Content</label>
+                <comment>Text and trust badges for the centered Spotlight login card.</comment>
+                <depends>
+                    <field id="login_design/layout">spotlight</field>
+                </depends>
+                <field id="environment_badge" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Environment Badge</label>
+                </field>
+                <field id="passkey_headline" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Passkey Headline</label>
+                </field>
+                <field id="passkey_description" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Passkey Description</label>
+                </field>
+                <field id="passkey_button_label" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Passkey Button Label</label>
+                </field>
+                <field id="password_two_fa_notice" translate="label comment" type="textarea" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Password 2FA Notice</label>
+                    <comment>Shown on the password tab only.</comment>
+                </field>
+            </group>
+
+            <group id="login_design_split_console" translate="label comment" type="text" sortOrder="24" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Split Console Layout Content</label>
+                <comment>Brand rail and sign-in copy for the Split Console layout.</comment>
+                <depends>
+                    <field id="login_design/layout">split_console</field>
+                </depends>
+                <field id="brand_headline" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Brand Headline</label>
+                </field>
+                <field id="brand_highlight" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Brand Headline Highlight</label>
+                </field>
+                <field id="brand_description" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Brand Description</label>
+                </field>
+                <field id="sign_in_title" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Sign In Title</label>
+                </field>
+                <field id="sign_in_subtitle" translate="label" type="textarea" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Sign In Subtitle</label>
+                </field>
+                <field id="passkey_subtitle" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Passkey Button Subtitle</label>
+                </field>
+                <field id="password_two_fa_notice" translate="label comment" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Password 2FA Notice</label>
+                    <comment>Shown below the password field when using credentials.</comment>
+                </field>
+            </group>
+
+            <group id="login_design_command_deck" translate="label comment" type="text" sortOrder="25" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Command Deck Layout Content</label>
+                <comment>Stage panel and authentication module copy for the Command Deck layout.</comment>
+                <depends>
+                    <field id="login_design/layout">command_deck</field>
+                </depends>
+                <field id="stage_headline" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Stage Headline</label>
+                </field>
+                <field id="stage_description" translate="label" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Stage Description</label>
+                </field>
+                <field id="auth_label" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Authentication Label</label>
+                </field>
+                <field id="sign_in_title" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Sign In Title</label>
+                </field>
+                <field id="passkey_subtitle" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Passkey Button Subtitle</label>
+                </field>
+                <field id="password_two_fa_notice" translate="label comment" type="textarea" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Password 2FA Notice</label>
+                    <comment>Shown below the password field when using credentials.</comment>
+                </field>
+                <field id="footer_text" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Footer Text</label>
+                </field>
+            </group>
+
+            <group id="webauthn" translate="label comment" type="text" sortOrder="25" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>WebAuthn</label>
+                <comment>Relying party and ceremony settings for passkey registration and login. Leave RP ID and origin empty to derive them from the store base URL.</comment>
+                <field id="relying_party_name" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Relying Party Name</label>
+                    <comment>Human-readable name shown by the authenticator during registration. Falls back to the branding company name when empty.</comment>
+                </field>
+                <field id="relying_party_id" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Relying Party ID (rpId)</label>
+                    <comment>Registrable domain used as the WebAuthn rpId (e.g. example.com). Leave empty to derive it from the store base URL host.</comment>
+                </field>
+                <field id="expected_origin" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Expected Origin</label>
+                    <comment>Origin expected in WebAuthn responses (e.g. https://example.com). Leave empty to derive it from the store base URL.</comment>
+                </field>
+                <field id="user_verification" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>User Verification</label>
+                    <source_model>FalconMedia\AdminPasskey\Model\Config\Source\UserVerification</source_model>
+                    <comment>WebAuthn userVerification requirement for registration and assertion ceremonies.</comment>
+                </field>
+                <field id="resident_key" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Resident Key</label>
+                    <source_model>FalconMedia\AdminPasskey\Model\Config\Source\ResidentKey</source_model>
+                    <comment>WebAuthn residentKey requirement. Preferred or Required enables discoverable (usernameless) passkeys.</comment>
+                </field>
+                <field id="ceremony_timeout_ms" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Ceremony Timeout (milliseconds)</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>Timeout hint passed to the browser WebAuthn ceremony.</comment>
+                </field>
+                <field id="challenge_lifetime_seconds" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Challenge Lifetime (seconds)</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>How long a generated challenge remains valid before it expires and must be reissued.</comment>
+                </field>
+            </group>
+
+            <group id="onboarding" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Onboarding</label>
+                <comment>Guide administrators through passkey enrollment.</comment>
+                <field id="require_passkey_onboarding" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Require Passkey Onboarding</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Redirect admins without a passkey to the setup wizard after login, respecting recovery exceptions.</comment>
+                </field>
+                <field id="recommend_second_passkey" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Recommend a Second Passkey</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Recommend registering a backup passkey at the end of the setup wizard.</comment>
+                </field>
+            </group>
+
+            <group id="trusted_devices" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Trusted Devices</label>
+                <comment>Remember trusted browsers to reduce repeated verification.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Trusted Devices</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="lifetime_days" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Trusted Device Lifetime (days)</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>Number of days a trusted device remains valid before re-verification is required.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="successful_logins_before_trust" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Successful Logins Before Trust</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>Number of successful logins from a browser before it is remembered as a trusted device.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="lockout" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Lockout</label>
+                <comment>Throttle and lock accounts after repeated failed login attempts.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Lockout</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="max_failed_attempts" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Maximum Failed Attempts</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>Number of failed login attempts before the account is locked.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="lockout_duration_minutes" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Lockout Duration (minutes)</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>How long an account stays locked after exceeding the failed-attempt threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="attempt_window_minutes" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Failed Attempt Window (minutes)</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>Rolling time window in which failed attempts are counted toward the lockout threshold.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="recovery" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Recovery</label>
+                <comment>Emergency fallback when passkey authentication blocks Admin access.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Emergency Recovery Mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="warning_text" translate="label comment" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Recovery Warning Text</label>
+                    <comment>Warning message displayed before an administrator enables emergency recovery.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="expiry_minutes" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Recovery Auto-Expiry (minutes)</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>Emergency recovery mode disables itself automatically after this many minutes so it can never stay on indefinitely.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="migration_dashboard" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Migration Dashboard</label>
+                <comment>Track passkey adoption progress across administrators.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Migration Dashboard</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="reminder_email_enabled" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Reminder Emails</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Allow sending reminder emails to administrators who have not registered a passkey.</comment>
+                </field>
+            </group>
+
+            <group id="security_dashboard_widget" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Security Dashboard Widget</label>
+                <comment>Configurable security-status widget on the Magento Admin dashboard.</comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Dashboard Widget</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enabled by default after installation. Individual cards can be toggled below.</comment>
+                </field>
+                <field id="refresh_interval" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Refresh Interval (seconds)</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>How often the dashboard widget refreshes its data.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="card_passkey_adoption" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Passkey Adoption</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_admins_without_passkeys" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Admins Without Passkeys</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_login_ratio" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Passkey vs Password Login Ratio</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_active_lockouts" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Active Lockouts</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_failed_logins_24h" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Failed Logins (last 24h)</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_health_status" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Health Status</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_recovery_status" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Recovery Mode Status</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_trusted_devices" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Trusted Devices</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_diagnostics_reports" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Diagnostics Reports</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_audit_events" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Audit Events</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_last_cleanup" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Last Cleanup</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_last_security_event" translate="label" type="select" sortOrder="140" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Last Security Event</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_security_score" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Security Score</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="card_quick_actions" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Card: Quick Actions</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="security_score" translate="label comment" type="text" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Security Score</label>
+                <comment>Weighting for the 0-100 security score engine. Weights should sum to 100.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Security Score</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="weight_authentication" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Weight: Authentication</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>Relative weight of authentication controls in the total score.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="weight_security" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Weight: Security</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>Relative weight of platform security controls in the total score.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="weight_operational" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Weight: Operational</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>Relative weight of operational controls in the total score.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="weight_threats" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Weight: Threats</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>Relative weight of active threat indicators in the total score.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="health_check" translate="label comment" type="text" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Health Check</label>
+                <comment>Environment and configuration sanity checks for the module.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Health Check</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
+            <group id="diagnostics" translate="label comment" type="text" sortOrder="110" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Diagnostics</label>
+                <comment>Support diagnostics report generation and delivery.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Diagnostics</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="support_email" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Support Email Recipient</label>
+                    <validate>validate-email</validate>
+                    <comment>Destination address used when sending diagnostics reports to the developer.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="support_reference_prefix" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Support Reference Prefix</label>
+                    <comment>Prefix used for the Support Reference ID in ZIP filenames, manifests, and emails.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="cleanup" translate="label comment" type="text" sortOrder="120" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Cleanup</label>
+                <comment>Data retention and scheduled cleanup policies.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Scheduled Cleanup</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="challenge_retention_days" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Challenge Retention (days)</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>How long expired WebAuthn challenges are retained before cleanup.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="diagnostics_retention_days" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Diagnostics Retention (days)</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>How long generated diagnostics reports are retained before cleanup.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="audit_retention_days" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Audit Log Retention (days)</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>How long audit events are retained before cleanup.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="score_snapshot_retention_days" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Security Score Snapshot Retention (days)</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>How long historical security score snapshots are retained before cleanup.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="reminder_retention_days" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Reminder History Retention (days)</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <comment>How long migration reminder history rows are retained before cleanup.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="schedule" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Cleanup Cron Schedule</label>
+                    <comment>Cron expression for the scheduled cleanup job (e.g. 0 3 * * *).</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="fail2ban" translate="label comment" type="text" sortOrder="130" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Fail2Ban</label>
+                <comment>Write parseable log lines for Fail2Ban to consume.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Fail2Ban Logging</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="log_path" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Fail2Ban Log Path</label>
+                    <comment>Filesystem path (relative to the Magento root) for Fail2Ban-compatible log lines.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="branding" translate="label comment" type="text" sortOrder="140" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>White Label &amp; Branding</label>
+                <comment>Optional white-label branding. Enabled by default with FalconMedia defaults.</comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Branding</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, the configured branding replaces the default FalconMedia branding.</comment>
+                </field>
+                <field id="company_name" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Company Name</label>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="support_email" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Support Email</label>
+                    <validate>validate-email</validate>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="support_url" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Support URL</label>
+                    <validate>validate-url</validate>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="documentation_url" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Documentation URL</label>
+                    <validate>validate-url</validate>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="privacy_url" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Privacy Policy URL</label>
+                    <validate>validate-url</validate>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="footer_text" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Footer Text</label>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="primary_accent_color" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Primary Accent Color</label>
+                    <comment>Hex color used as the primary accent in branded surfaces (e.g. #f26322).</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="secondary_accent_color" translate="label comment" type="text" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Secondary Accent Color</label>
+                    <comment>Hex color used as the secondary accent in branded surfaces (e.g. #2563eb).</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="logo" translate="label comment" type="image" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Logo</label>
+                    <backend_model>FalconMedia\AdminPasskey\Model\Config\Backend\BrandingImage</backend_model>
+                    <upload_dir config="system/filesystem/media">adminpasskey/logo</upload_dir>
+                    <base_url type="media">adminpasskey/logo</base_url>
+                    <comment>Accepted: SVG, PNG, JPG, WebP. SVG files are sanitised before storage.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="icon" translate="label comment" type="image" sortOrder="110" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Icon</label>
+                    <backend_model>FalconMedia\AdminPasskey\Model\Config\Backend\BrandingImage</backend_model>
+                    <upload_dir config="system/filesystem/media">adminpasskey/icon</upload_dir>
+                    <base_url type="media">adminpasskey/icon</base_url>
+                    <comment>Accepted: SVG, PNG, JPG, WebP. SVG files are sanitised before storage.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="background_image" translate="label comment" type="image" sortOrder="120" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Background Image (optional)</label>
+                    <backend_model>FalconMedia\AdminPasskey\Model\Config\Backend\BrandingImage</backend_model>
+                    <upload_dir config="system/filesystem/media">adminpasskey/background_image</upload_dir>
+                    <base_url type="media">adminpasskey/background_image</base_url>
+                    <comment>Optional login background. Accepted: SVG, PNG, JPG, WebP.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="wizard_illustration" translate="label comment" type="image" sortOrder="130" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Wizard Illustration</label>
+                    <backend_model>FalconMedia\AdminPasskey\Model\Config\Backend\BrandingImage</backend_model>
+                    <upload_dir config="system/filesystem/media">adminpasskey/wizard_illustration</upload_dir>
+                    <base_url type="media">adminpasskey/wizard_illustration</base_url>
+                    <comment>Illustration shown in the passkey setup wizard. Accepted: SVG, PNG, JPG, WebP.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="dashboard_icon" translate="label comment" type="image" sortOrder="140" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Dashboard Icon</label>
+                    <backend_model>FalconMedia\AdminPasskey\Model\Config\Backend\BrandingImage</backend_model>
+                    <upload_dir config="system/filesystem/media">adminpasskey/dashboard_icon</upload_dir>
+                    <base_url type="media">adminpasskey/dashboard_icon</base_url>
+                    <comment>Icon shown on the Admin dashboard widget. Accepted: SVG, PNG, JPG, WebP.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="login_intro_text" translate="label comment" type="textarea" sortOrder="150" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Login Intro Copy</label>
+                    <comment>Text shown above the passkey button on the Admin login. Leave empty for the default.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="wizard_intro_text" translate="label comment" type="textarea" sortOrder="160" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Wizard Intro Copy</label>
+                    <comment>Text shown at the start of the passkey setup wizard. Leave empty for the default.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="diagnostics_intro_text" translate="label comment" type="textarea" sortOrder="170" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Diagnostics Intro Copy</label>
+                    <comment>Text shown on the diagnostics screen. Leave empty for the default.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="score_label_poor" translate="label" type="text" sortOrder="180" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Security Score Label: Poor</label>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="score_label_fair" translate="label" type="text" sortOrder="190" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Security Score Label: Fair</label>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="score_label_good" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Security Score Label: Good</label>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="score_label_excellent" translate="label" type="text" sortOrder="210" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Security Score Label: Excellent</label>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="email_templates" translate="label comment" type="text" sortOrder="150" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Email Templates</label>
+                <comment>Transactional email templates used by the module.</comment>
+                <field id="reminder_template" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Passkey Reminder Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <comment>Email sent to administrators who have not registered a passkey.</comment>
+                </field>
+                <field id="lockout_template" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Lockout Notification Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <comment>Email sent when an administrator account is locked out.</comment>
+                </field>
+                <field id="recovery_template" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Recovery Notification Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <comment>Email sent when emergency recovery mode is enabled or disabled.</comment>
+                </field>
+                <field id="diagnostics_template" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Diagnostics Report Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <comment>Email used when sending a diagnostics report to the developer.</comment>
+                </field>
+                <field id="support_template" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Support Confirmation Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <comment>Confirmation email sent to an administrator after a support request.</comment>
+                </field>
+                <field id="security_alert_template" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Security Alert Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <comment>Email sent when a critical security event is detected.</comment>
+                </field>
+            </group>
+
+            <group id="developer_options" translate="label comment" type="text" sortOrder="160" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Developer Options</label>
+                <comment>Diagnostics-only options. Do not enable on production unless instructed.</comment>
+                <field id="debug_logging" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Debug Logging</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Write verbose module diagnostics to the Magento log. Keep disabled on production.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

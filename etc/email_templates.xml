@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="adminpasskey_email_templates_reminder_template"
+              label="Admin Passkey Migration Reminder"
+              file="adminpasskey_reminder.html"
+              type="html"
+              module="FalconMedia_AdminPasskey"
+              area="adminhtml"/>
+    <template id="adminpasskey_email_templates_diagnostics_template"
+              label="Admin Passkey Diagnostics Report"
+              file="adminpasskey_diagnostics.html"
+              type="html"
+              module="FalconMedia_AdminPasskey"
+              area="adminhtml"/>
+    <template id="adminpasskey_email_templates_lockout_template"
+              label="Admin Passkey Lockout Notification"
+              file="adminpasskey_lockout.html"
+              type="html"
+              module="FalconMedia_AdminPasskey"
+              area="adminhtml"/>
+    <template id="adminpasskey_email_templates_recovery_template"
+              label="Admin Passkey Recovery Notification"
+              file="adminpasskey_recovery.html"
+              type="html"
+              module="FalconMedia_AdminPasskey"
+              area="adminhtml"/>
+    <template id="adminpasskey_email_templates_support_template"
+              label="Admin Passkey Support Confirmation"
+              file="adminpasskey_support.html"
+              type="html"
+              module="FalconMedia_AdminPasskey"
+              area="adminhtml"/>
+    <template id="adminpasskey_email_templates_security_alert_template"
+              label="Admin Passkey Security Alert"
+              file="adminpasskey_security_alert.html"
+              type="html"
+              module="FalconMedia_AdminPasskey"
+              area="adminhtml"/>
+</config>

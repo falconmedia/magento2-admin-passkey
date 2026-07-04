@@ -1,0 +1,179 @@
+<?php
+/**
+ * @var \FalconMedia\AdminPasskey\Block\Adminhtml\Passkey\Wizard $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$fingerprint = static function (int $size, string $stroke, float $sw = 1.7): string {
+    return '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="' . $stroke
+        . '" stroke-width="' . $sw . '" stroke-linecap="round" stroke-linejoin="round">'
+        . '<path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"></path>'
+        . '<path d="M14 13.12c0 2.38 0 6.38-1 8.88"></path><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"></path>'
+        . '<path d="M2 12a10 10 0 0 1 18-6"></path><path d="M2 16h.01"></path>'
+        . '<path d="M21.8 16c.2-2 .131-5.354 0-6"></path><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"></path>'
+        . '<path d="M8.65 22c.21-.66.45-1.32.57-2"></path><path d="M9 6.8a6 6 0 0 1 9 5.2v2"></path></svg>';
+};
+$check = static function (int $size, string $stroke, float $sw = 2.4): string {
+    return '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="' . $stroke
+        . '" stroke-width="' . $sw . '" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5">'
+        . '</path></svg>';
+};
+?>
+<div class="apk-wiz"
+     data-mage-init='<?= $escaper->escapeHtmlAttr($block->getMageInitJson()) ?>'
+     data-mandatory="<?= $block->isOnboardingMandatory() ? '1' : '0' ?>">
+    <div class="apk-wiz__backdrop" aria-hidden="true"></div>
+
+    <div class="apk-wiz__center" role="dialog" aria-modal="true" aria-label="<?= $escaper->escapeHtmlAttr(__('Passkey setup')) ?>">
+        <div class="apk-wiz__modal">
+            <a class="apk-wiz__close" href="<?= $escaper->escapeUrl($block->getCloseUrl()) ?>" data-role="close-btn"
+               title="<?= $escaper->escapeHtmlAttr(__('Cancel')) ?>"
+               aria-label="<?= $escaper->escapeHtmlAttr(__('Cancel')) ?>">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                     stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+            </a>
+            <a class="apk-wiz__signout" href="<?= $escaper->escapeUrl($block->getSignOutUrl()) ?>"
+               data-role="signout-btn" hidden>
+                <?= $escaper->escapeHtml(__('Sign out')) ?>
+            </a>
+
+            <div class="apk-wiz__inner">
+                <div class="apk-wiz__brand">
+                    <div class="apk-wiz__brand-icon"><?= /* @noEscape */ $fingerprint(28, '#f26322') ?></div>
+                    <div class="apk-wiz__brand-text">
+                        <?= $escaper->escapeHtml(__('Set up a passkey to protect your Admin account.')) ?>
+                    </div>
+                </div>
+
+                <div class="apk-wiz__progress" aria-hidden="true">
+                    <?php
+                    $steps = [__('Welcome'), __('Register'), __('Name it'), __('Finish')];
+                    foreach ($steps as $i => $label):
+                        $num = $i + 1;
+                        ?>
+                        <div class="apk-wiz__prog-step<?= $i === 0 ? ' is-active' : '' ?>" data-progress-step="<?= $num ?>">
+                            <span class="apk-wiz__prog-dot">
+                                <span class="apk-wiz__prog-num"><?= $num ?></span>
+                                <span class="apk-wiz__prog-check"><?= /* @noEscape */ $check(14, '#1a0a02', 3.2) ?></span>
+                            </span>
+                            <span class="apk-wiz__prog-label"><?= $escaper->escapeHtml($label) ?></span>
+                        </div>
+                        <?php if ($i < count($steps) - 1): ?>
+                            <div class="apk-wiz__prog-line" data-progress-line="<?= $num ?>"></div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="apk-wiz__content">
+                    <!-- Step 1 — Welcome -->
+                    <div class="apk-wiz__step" data-step="welcome">
+                        <h2 class="apk-wiz__title apk-wiz__title--center">
+                            <?= $escaper->escapeHtml(__('Set up a passkey for your Admin account')) ?>
+                        </h2>
+                        <div class="apk-wiz__bullets">
+                            <div class="apk-wiz__bullet">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#34d399"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0
+                                     5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1
+                                     1 0 0 1 1.3 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1Z"></path><path d="m9 12 2 2 4-4">
+                                     </path></svg>
+                                <span><?= $escaper->escapeHtml(__('Passkeys let you sign in with your device biometrics'
+                                    . ' or security key instead of a password. They are phishing-resistant and cannot be'
+                                    . ' reused across sites, which makes them far safer than passwords.')) ?></span>
+                            </div>
+                            <div class="apk-wiz__bullet">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f26322"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2"
+                                     width="14" height="20" rx="2"></rect><path d="M12 18h.01"></path></svg>
+                                <span><?= $escaper->escapeHtml(__('You can use a built-in fingerprint or face sensor,'
+                                    . ' your phone, or a hardware security key.')) ?></span>
+                            </div>
+                        </div>
+                        <div class="apk-wiz__actions">
+                            <button type="button" class="apk-wiz__btn apk-wiz__btn--primary" data-action="start">
+                                <?= $escaper->escapeHtml(__('Get started')) ?>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path
+                                     d="m9 18 6-6-6-6"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 — Register -->
+                    <div class="apk-wiz__step apk-wiz__step--center" data-step="registration" hidden>
+                        <div class="apk-wiz__ring">
+                            <span class="apk-wiz__ring-ping"></span>
+                            <span class="apk-wiz__ring-fill"></span>
+                            <?= /* @noEscape */ $fingerprint(38, '#f26322', 1.5) ?>
+                        </div>
+                        <h2 class="apk-wiz__title"><?= $escaper->escapeHtml(__('Create your passkey')) ?></h2>
+                        <p class="apk-wiz__text">
+                            <?= $escaper->escapeHtml(__('Select "Create Passkey" and follow your browser prompt to'
+                                . ' register this device.')) ?>
+                        </p>
+                        <div class="apk-wiz__actions">
+                            <button type="button" class="apk-wiz__btn apk-wiz__btn--primary" data-action="create">
+                                <span class="apk-wiz__spinner" data-role="spinner" hidden></span>
+                                <span data-role="create-label"><?= $escaper->escapeHtml(__('Create Passkey')) ?></span>
+                            </button>
+                            <p class="apk-wiz__status" data-role="status" aria-live="polite"></p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 — Name it -->
+                    <div class="apk-wiz__step" data-step="success" hidden>
+                        <div class="apk-wiz__success-head">
+                            <div class="apk-wiz__badge apk-wiz__badge--ok"><?= /* @noEscape */ $check(26, '#34d399') ?></div>
+                            <h2 class="apk-wiz__title"><?= $escaper->escapeHtml(__('Passkey registered')) ?></h2>
+                            <p class="apk-wiz__text">
+                                <?= $escaper->escapeHtml(__('Give this passkey a name so you can recognise it later.')) ?>
+                            </p>
+                        </div>
+                        <div class="apk-wiz__field">
+                            <label class="apk-wiz__label" for="apk-wiz-name">
+                                <?= $escaper->escapeHtml(__('Passkey name')) ?>
+                            </label>
+                            <input type="text" id="apk-wiz-name" class="apk-wiz__input" data-role="friendly-name"
+                                   maxlength="255" placeholder="<?= $escaper->escapeHtmlAttr(__('e.g. Work laptop')) ?>"/>
+                            <p class="apk-wiz__field-error" data-role="name-status" aria-live="polite"></p>
+                        </div>
+                        <div class="apk-wiz__actions">
+                            <button type="button" class="apk-wiz__btn apk-wiz__btn--primary" data-action="save-name">
+                                <?= $escaper->escapeHtml(__('Save name')) ?>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 — Finish -->
+                    <div class="apk-wiz__step apk-wiz__step--center" data-step="recommendation" hidden>
+                        <div class="apk-wiz__badge apk-wiz__badge--done"><?= /* @noEscape */ $check(28, '#07130d', 3) ?></div>
+                        <h2 class="apk-wiz__title apk-wiz__title--lg"><?= $escaper->escapeHtml(__('You are all set')) ?></h2>
+                        <?php if ($block->isSecondPasskeyRecommended()): ?>
+                            <p class="apk-wiz__text">
+                                <?= $escaper->escapeHtml(__('We recommend registering a second passkey (for example on'
+                                    . ' your phone) as a backup, so you never lose access to the Admin.')) ?>
+                            </p>
+                        <?php else: ?>
+                            <p class="apk-wiz__text">
+                                <?= $escaper->escapeHtml(__('Your passkey is ready. You can now sign in without a'
+                                    . ' password.')) ?>
+                            </p>
+                        <?php endif; ?>
+                        <div class="apk-wiz__actions apk-wiz__actions--stack">
+                            <?php if ($block->isSecondPasskeyRecommended()): ?>
+                                <button type="button" class="apk-wiz__btn apk-wiz__btn--ghost" data-action="add-another">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path
+                                         d="M5 12h14M12 5v14"></path></svg>
+                                    <?= $escaper->escapeHtml(__('Add another passkey')) ?>
+                                </button>
+                            <?php endif; ?>
+                            <button type="button" class="apk-wiz__btn apk-wiz__btn--primary" data-action="finish">
+                                <?= $escaper->escapeHtml(__('Continue to Magento Admin')) ?>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

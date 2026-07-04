@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="FalconMedia_AdminPasskey" setup_version="1.0.0">
+        <sequence>
+            <module name="Magento_Backend"/>
+            <module name="Magento_User"/>
+            <module name="Magento_Ui"/>
+            <module name="Magento_TwoFactorAuth"/>
+        </sequence>
+    </module>
+</config>

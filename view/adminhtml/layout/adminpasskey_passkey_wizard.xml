@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="FalconMedia_AdminPasskey::css/wizard-design.css"/>
+    </head>
+    <body>
+        <attribute name="class" value="apk-wiz-page"/>
+        <referenceContainer name="content">
+            <block class="FalconMedia\AdminPasskey\Block\Adminhtml\Passkey\Wizard"
+                   name="adminpasskey.passkey.wizard"
+                   template="FalconMedia_AdminPasskey::passkey/wizard.phtml">
+                <arguments>
+                    <argument name="branding" xsi:type="object">FalconMedia\AdminPasskey\ViewModel\Branding\Branding</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

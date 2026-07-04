@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="falconmedia_adminpasskey_cleanup"
+             instance="FalconMedia\AdminPasskey\Cron\CleanupCron"
+             method="execute">
+            <config_path>adminpasskey/cleanup/schedule</config_path>
+        </job>
+        <job name="falconmedia_adminpasskey_score_snapshot"
+             instance="FalconMedia\AdminPasskey\Cron\SecurityScoreSnapshotCron"
+             method="execute">
+            <schedule>0 3 * * *</schedule>
+        </job>
+    </group>
+</config>

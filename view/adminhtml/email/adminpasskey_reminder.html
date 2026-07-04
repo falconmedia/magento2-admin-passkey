@@ -1,0 +1,18 @@
+<!--@subject {{trans "Action required: set up your admin passkey"}} @-->
+<!--@vars {
+"var admin_name":"Admin name",
+"var company_name":"Company name",
+"var support_email":"Support email",
+"var support_url":"Support URL",
+"var accent_color":"Accent color",
+"var footer_text":"Footer text"
+} @-->
+<body>
+    <p style="color:{{var accent_color}};font-weight:bold;">{{var company_name}}</p>
+    <p>{{trans "Hello %name," name=$admin_name}}</p>
+    <p>{{trans "Your administrator account does not yet have a passkey. Passkeys make signing in faster and phishing-resistant."}}</p>
+    <p>{{trans "Please sign in to the Admin and complete the passkey setup wizard at your earliest convenience."}}</p>
+    <p>{{trans "Need help? Contact %email." email=$support_email}}</p>
+    <hr/>
+    <p style="color:#888;font-size:12px;">{{var footer_text}}</p>
+</body>

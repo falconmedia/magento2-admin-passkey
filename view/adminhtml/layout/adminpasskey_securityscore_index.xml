@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="styles"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="FalconMedia\AdminPasskey\Block\Adminhtml\SecurityScore\View"
+                   name="falconmedia_adminpasskey_score_view"
+                   template="FalconMedia_AdminPasskey::securityscore/view.phtml"/>
+            <uiComponent name="falconmedia_adminpasskey_score_listing"/>
+        </referenceContainer>
+    </body>
+</page>

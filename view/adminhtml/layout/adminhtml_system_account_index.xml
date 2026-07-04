@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- My Passkeys list on the admin's own Account Setting page. The setup
+             wizard is reached from its own "Add Passkey" action, so it is not
+             embedded here. -->
+        <referenceContainer name="content">
+            <block class="FalconMedia\AdminPasskey\Block\Adminhtml\Passkey\Index"
+                   name="adminpasskey.passkey.index"
+                   template="FalconMedia_AdminPasskey::passkey/index.phtml"
+                   after="-"/>
+        </referenceContainer>
+    </body>
+</page>

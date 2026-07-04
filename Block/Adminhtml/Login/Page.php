@@ -1,0 +1,302 @@
+<?php
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+namespace FalconMedia\AdminPasskey\Block\Adminhtml\Login;
+
+use FalconMedia\AdminPasskey\Model\Config\ConfigProvider;
+use FalconMedia\AdminPasskey\Model\Config\Source\LoginDesignLayout;
+use FalconMedia\AdminPasskey\Model\Login\LoginDesignConfig;
+use FalconMedia\AdminPasskey\ViewModel\Branding\Branding;
+use Magento\Backend\Block\Template;
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\App\State as AppState;
+use Magento\Framework\Data\Form\FormKey;
+use Magento\Framework\Serialize\Serializer\Json;
+
+/**
+ * Renders the configurable Admin Passkey login page design.
+ *
+ * @internal Admin-only support; not part of a public web API contract.
+ */
+class Page extends Template
+{
+    private const JS_COMPONENT = 'FalconMedia_AdminPasskey/js/login-page';
+
+    public function __construct(
+        Context $context,
+        private readonly ConfigProvider $configProvider,
+        private readonly LoginDesignConfig $loginDesignConfig,
+        private readonly FormKey $formKeyProvider,
+        private readonly Json $json,
+        private readonly AppState $appState,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+    }
+
+    /**
+     * Raw Magento deploy mode: developer | production | default.
+     */
+    public function getEnvironmentMode(): string
+    {
+        try {
+            return $this->appState->getMode();
+        } catch (\Throwable) {
+            return AppState::MODE_DEFAULT;
+        }
+    }
+
+    /**
+     * Environment badge text: an explicit configured value wins, otherwise the
+     * live deploy mode (e.g. "Developer" / "Production").
+     */
+    public function getEnvironmentLabel(): string
+    {
+        $configured = $this->loginDesignConfig->getEnvironmentBadge();
+
+        return $configured !== '' ? $configured : ucfirst($this->getEnvironmentMode());
+    }
+
+    /**
+     * Logo markup for a layout. A configured white-label logo renders as an
+     * <img>; otherwise the native Magento wordmark is inlined so its letters and
+     * trademark follow the active colour theme (white on dark, dark on light)
+     * while the gem keeps the Magento orange.
+     *
+     * @param string $modifierClass BEM element class for sizing.
+     */
+    public function getLogoHtml(string $modifierClass): string
+    {
+        $branding = $this->getBrandingViewModel();
+        $customLogo = $branding?->getLogoUrl();
+        $class = $this->_escaper->escapeHtmlAttr($modifierClass);
+        $alt = $this->_escaper->escapeHtmlAttr((string) __('Magento'));
+
+        if ($customLogo !== null && $customLogo !== '') {
+            return '<img src="' . $this->_escaper->escapeUrl($customLogo) . '" alt="' . $alt . '" class="'
+                . $class . '"/>';
+        }
+
+        return '<span class="' . $class . ' adminpasskey-login-page__logo--native" role="img" aria-label="'
+            . $alt . '">' . $this->getNativeMagentoSvg() . '</span>';
+    }
+
+    /**
+     * Native Magento logo as inline SVG. Gem paths stay Magento orange; the
+     * wordmark uses currentColor so the theme token drives its colour.
+     */
+    private function getNativeMagentoSvg(): string
+    {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 179.073 50" focusable="false" '
+            . 'aria-hidden="true" class="adminpasskey-login-page__logo-svg">'
+            . '<path fill="#f26322" d="M21.432 0L0 12.373v24.713l6.117 3.533-.041-24.713 15.315-8.842 15.313 8.842v24.706'
+            . 'l6.118-3.526V12.35z"></path>'
+            . '<path fill="#f26322" d="M24.47 40.618l-3.058 1.772-3.071-1.759V15.906l-6.116 3.532.01 24.712 9.172 5.298 '
+            . '9.18-5.298V19.438l-6.117-3.532z"></path>'
+            . '<path fill="currentColor" d="M56.838 12.522l8.415 21.258h.068l8.21-21.258h3.203V36.88h-2.215V15.656h-.068'
+            . 'c-.114.386-.239.772-.374 1.158-.115.318-.246.67-.393 1.055-.147.387-.278.75-.391 1.09l-7.052 17.919h-2.01'
+            . 'L57.11 18.96a19.913 19.913 0 0 1-.408-1.039 43.558 43.558 0 0 1-.375-1.073 68.067 68.067 0 0 0-.408-1.192'
+            . 'h-.069v21.223h-2.112V12.522h3.1zM83.17 36.982a5.205 5.205 0 0 1-1.823-.92 4.327 4.327 0 0 1-1.209-1.533 '
+            . '4.881 4.881 0 0 1-.443-2.145 5.018 5.018 0 0 1 .579-2.556 4.472 4.472 0 0 1 1.568-1.584 7.927 7.927 0 0 1 '
+            . '2.299-.903 24.732 24.732 0 0 1 2.811-.477 36 36 0 0 0 2.198-.29 6.689 6.689 0 0 0 1.465-.392c.329-.123.614'
+            . '-.343.817-.63.187-.325.276-.698.256-1.073v-.34a3.212 3.212 0 0 0-1.09-2.674 4.93 4.93 0 0 0-3.134-.87c'
+            . '-3.135 0-4.781 1.306-4.941 3.918h-2.077a5.748 5.748 0 0 1 1.891-4.089 7.5 7.5 0 0 1 5.127-1.533 7.335 '
+            . '7.335 0 0 1 4.564 1.278 4.923 4.923 0 0 1 1.67 4.173v9.573c-.034.402.069.804.29 1.141.219.251.536.394.868'
+            . '.392.12-.001.24-.012.358-.034.124-.022.266-.057.425-.102h.103v1.533c-.188.077-.382.14-.58.188-.28.062'
+            . '-.566.091-.852.086a2.694 2.694 0 0 1-1.839-.597 2.575 2.575 0 0 1-.75-1.891v-.374h-.102c-.277.372-.578'
+            . '.725-.903 1.056-.38.385-.81.717-1.278.988a7.14 7.14 0 0 1-1.737.715 8.443 8.443 0 0 1-2.249.272 8.186 '
+            . '8.186 0 0 1-2.282-.306m5.195-1.857a5.971 5.971 0 0 0 1.857-1.175 4.767 4.767 0 0 0 1.499-3.441V27.34a7.295 '
+            . '7.295 0 0 1-2.061.732 33.21 33.21 0 0 1-2.504.426c-.749.114-1.441.233-2.077.358a5.237 5.237 0 0 0-1.652'
+            . '.596 3.055 3.055 0 0 0-1.108 1.107 3.579 3.579 0 0 0-.408 1.824c-.018.53.093 1.056.324 1.533.201.392.493'
+            . '.73.851.987a3.35 3.35 0 0 0 1.244.529c.493.104.995.155 1.499.153a6.555 6.555 0 0 0 2.536-.46M99.35 41.734a'
+            . '4.687 4.687 0 0 1-2.009-3.287h2.043c.14.966.763 1.794 1.652 2.197a7.522 7.522 0 0 0 3.288.664 5.688 5.688 '
+            . '0 0 0 4.173-1.345 4.997 4.997 0 0 0 1.345-3.697v-2.793h-.102a7.293 7.293 0 0 1-2.283 2.282 6.297 6.297 0 0 '
+            . '1-3.304.784 7.375 7.375 0 0 1-3.135-.647 6.921 6.921 0 0 1-2.385-1.806 8.095 8.095 0 0 1-1.516-2.777 11.429 '
+            . '11.429 0 0 1-.528-3.56 10.89 10.89 0 0 1 .613-3.799 8.483 8.483 0 0 1 1.636-2.777 6.75 6.75 0 0 1 2.402'
+            . '-1.703 7.45 7.45 0 0 1 2.913-.58 6.234 6.234 0 0 1 3.372.835 6.938 6.938 0 0 1 2.215 2.265h.102v-2.725h'
+            . '2.078v16.931a6.78 6.78 0 0 1-1.636 4.735 7.751 7.751 0 0 1-5.893 2.112 8.337 8.337 0 0 1-5.041-1.309m9.232'
+            . '-8.908a8.565 8.565 0 0 0 1.397-5.11 11.22 11.22 0 0 0-.34-2.862 6.239 6.239 0 0 0-1.056-2.231 4.828 4.828 '
+            . '0 0 0-1.789-1.448 5.772 5.772 0 0 0-2.503-.511 4.782 4.782 0 0 0-4.071 1.941 8.464 8.464 0 0 0-1.448 5.179c'
+            . '-.008.936.107 1.87.34 2.777a6.64 6.64 0 0 0 1.022 2.214 4.81 4.81 0 0 0 1.703 1.465 5.208 5.208 0 0 0 2.42'
+            . '.528 4.967 4.967 0 0 0 4.325-1.942M119.244 36.624a7.19 7.19 0 0 1-2.572-1.941 8.66 8.66 0 0 1-1.583-2.93 '
+            . '11.839 11.839 0 0 1-.546-3.662 11.179 11.179 0 0 1 .58-3.663 9.138 9.138 0 0 1 1.617-2.929 7.307 7.307 0 0 '
+            . '1 2.522-1.942 7.684 7.684 0 0 1 3.321-.698 7.275 7.275 0 0 1 3.56.8 6.678 6.678 0 0 1 2.351 2.146 8.806 '
+            . '8.806 0 0 1 1.278 3.083 16.87 16.87 0 0 1 .374 3.577h-13.422c.013.941.157 1.875.426 2.777a6.968 6.968 0 0 '
+            . '0 1.124 2.231 5.108 5.108 0 0 0 1.857 1.499 5.948 5.948 0 0 0 2.623.546 4.985 4.985 0 0 0 3.424-1.074 '
+            . '5.875 5.875 0 0 0 1.719-2.878h2.044a7.51 7.51 0 0 1-2.385 4.19 7.072 7.072 0 0 1-4.803 1.567 8.386 8.386 0 '
+            . '0 1-3.509-.699m8.312-12.264a5.986 5.986 0 0 0-.988-1.976 4.525 4.525 0 0 0-1.635-1.311 5.362 5.362 0 0 0'
+            . '-2.351-.478 5.623 5.623 0 0 0-2.368.478 5.064 5.064 0 0 0-1.754 1.311 6.566 6.566 0 0 0-1.141 1.96 9.615 '
+            . '9.615 0 0 0-.562 2.453h11.174a9.268 9.268 0 0 0-.375-2.437M134.879 19.267v2.691h.068a7.237 7.237 0 0 1 '
+            . '2.333-2.197 6.798 6.798 0 0 1 3.561-.868 5.834 5.834 0 0 1 4.037 1.413 5.174 5.174 0 0 1 1.584 4.071V36.88h'
+            . '-2.112V24.581a3.716 3.716 0 0 0-1.073-2.947 4.334 4.334 0 0 0-2.948-.937 5.896 5.896 0 0 0-2.111.375 5.558 '
+            . '5.558 0 0 0-1.738 1.039 4.717 4.717 0 0 0-1.601 3.593V36.88h-2.112V19.267h2.112zM151.912 36.284a2.934 '
+            . '2.934 0 0 1-.92-2.436V21.005h-2.657v-1.738h2.657v-5.416h2.112v5.416h3.271v1.738h-3.271v12.502a1.65 1.65 0 '
+            . '0 0 .426 1.312c.371.265.823.391 1.277.357.258-.001.515-.029.766-.085.215-.043.426-.106.63-.188h.103v1.806'
+            . 'a5.907 5.907 0 0 1-1.942.306 3.819 3.819 0 0 1-2.452-.731M162.625 36.624a7.368 7.368 0 0 1-2.571-1.942 '
+            . '8.732 8.732 0 0 1-1.618-2.929 12.217 12.217 0 0 1 0-7.324 8.744 8.744 0 0 1 1.618-2.93 7.386 7.386 0 0 1 '
+            . '2.571-1.942 8.106 8.106 0 0 1 3.424-.698 7.989 7.989 0 0 1 3.406.698 7.424 7.424 0 0 1 2.556 1.942 8.504 '
+            . '8.504 0 0 1 1.601 2.93 12.57 12.57 0 0 1 0 7.324 8.5 8.5 0 0 1-1.601 2.929 7.415 7.415 0 0 1-2.556 1.942 '
+            . '7.959 7.959 0 0 1-3.406.698 8.075 8.075 0 0 1-3.424-.698m6.013-1.652a5.308 5.308 0 0 0 1.873-1.601 7.215 '
+            . '7.215 0 0 0 1.124-2.385 11.348 11.348 0 0 0 0-5.792 7.215 7.215 0 0 0-1.124-2.385 5.289 5.289 0 0 0-1.873'
+            . '-1.601 6.109 6.109 0 0 0-5.195 0 5.497 5.497 0 0 0-1.874 1.601 7.046 7.046 0 0 0-1.141 2.385 11.392 11.392 '
+            . '0 0 0 0 5.792c.227.86.614 1.669 1.141 2.385a5.817 5.817 0 0 0 7.069 1.601"></path></svg>';
+    }
+
+    /**
+     * Theme switch (light / system / dark). login-page.js reads the buttons,
+     * persists the choice and reflects it via body[data-apk-theme].
+     */
+    public function getThemeToggleHtml(): string
+    {
+        $group = $this->_escaper->escapeHtmlAttr((string) __('Colour theme'));
+        $options = [
+            'light' => [(string) __('Light mode'), '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2'
+                . 'M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41">'
+                . '</path>'],
+            'system' => [(string) __('System theme'), '<rect x="2" y="3" width="20" height="14" rx="2"></rect>'
+                . '<path d="M8 21h8M12 17v4"></path>'],
+            'dark' => [(string) __('Dark mode'), '<path d="M12 3a6.4 6.4 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>'],
+        ];
+
+        $buttons = '';
+        foreach ($options as $value => [$label, $path]) {
+            $buttons .= '<button type="button" class="adminpasskey-theme__btn" data-theme="'
+                . $this->_escaper->escapeHtmlAttr($value) . '" title="' . $this->_escaper->escapeHtmlAttr($label)
+                . '" aria-label="' . $this->_escaper->escapeHtmlAttr($label) . '" aria-pressed="false">'
+                . '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+                . 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $path . '</svg></button>';
+        }
+
+        return '<div class="adminpasskey-theme" role="group" aria-label="' . $group . '">' . $buttons . '</div>';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function _prepareLayout()
+    {
+        if ($this->configProvider->isEnabled()) {
+            $this->pageConfig->addBodyClass('adminpasskey-login');
+            $this->pageConfig->addBodyClass(
+                'adminpasskey-login--' . $this->configProvider->getLoginDesignLayout()
+            );
+        }
+
+        return parent::_prepareLayout();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTemplate()
+    {
+        if (!$this->configProvider->isEnabled()) {
+            return 'Magento_Backend::admin/login.phtml';
+        }
+
+        return match ($this->configProvider->getLoginDesignLayout()) {
+            LoginDesignLayout::SPLIT_CONSOLE => 'FalconMedia_AdminPasskey::login/split-console.phtml',
+            LoginDesignLayout::COMMAND_DECK => 'FalconMedia_AdminPasskey::login/command-deck.phtml',
+            default => 'FalconMedia_AdminPasskey::login/spotlight.phtml',
+        };
+    }
+
+    public function isPasskeyLoginEnabled(): bool
+    {
+        return $this->configProvider->isEnabled() && $this->configProvider->isPasskeyFirstLogin();
+    }
+
+    public function isPasswordFallbackEnabled(): bool
+    {
+        return $this->configProvider->isPasswordFallbackEnabled();
+    }
+
+    public function getLoginDesignConfig(): LoginDesignConfig
+    {
+        return $this->loginDesignConfig;
+    }
+
+    /**
+     * @return Branding|null
+     */
+    public function getBrandingViewModel(): ?Branding
+    {
+        $branding = $this->getData('branding');
+
+        return $branding instanceof Branding ? $branding : null;
+    }
+
+    public function getAccentColor(): string
+    {
+        $branding = $this->getBrandingViewModel();
+
+        return $branding !== null ? $branding->getPrimaryAccentColor() : '#f26322';
+    }
+
+    public function getLogoUrl(): string
+    {
+        $branding = $this->getBrandingViewModel();
+        $customLogo = $branding?->getLogoUrl();
+
+        if ($customLogo !== null && $customLogo !== '') {
+            return $customLogo;
+        }
+
+        return $this->getViewFileUrl('FalconMedia_AdminPasskey::images/magento-logo.svg');
+    }
+
+    public function getFormKeyValue(): string
+    {
+        return $this->formKeyProvider->getFormKey();
+    }
+
+    public function getMageInitJson(): string
+    {
+        return $this->json->serialize([
+            self::JS_COMPONENT => [
+                'layout' => $this->configProvider->getLoginDesignLayout(),
+                'passkeyEnabled' => $this->isPasskeyLoginEnabled(),
+                'passwordEnabled' => $this->isPasswordFallbackEnabled(),
+                'defaultView' => $this->isPasskeyLoginEnabled() ? 'passkey' : 'password',
+                'optionsUrl' => $this->getUrl('adminpasskey/login/options'),
+                'verifyUrl' => $this->getUrl('adminpasskey/login/verify'),
+                'redirectUrl' => $this->getRequestedRedirect(),
+                'formKey' => $this->getFormKeyValue(),
+                'labels' => [
+                    'passkeyTab' => (string) __('Passkey'),
+                    'passwordTab' => (string) __('Password'),
+                    'passkeyButton' => $this->loginDesignConfig->getPasskeyButtonLabel() !== ''
+                        ? $this->loginDesignConfig->getPasskeyButtonLabel()
+                        : (string) __('Sign in with a passkey'),
+                    'inProgress' => (string) __('Waiting for your passkey…'),
+                    'unsupported' => (string) __('This browser does not support passkeys.'),
+                    'failed' => (string) __('The passkey login could not be completed.'),
+                    'continue' => (string) __('Continue'),
+                ],
+            ],
+        ]);
+    }
+
+    private function getRequestedRedirect(): string
+    {
+        $url = $this->getRequest()->getParam('url');
+
+        return is_string($url) ? $url : '';
+    }
+
+    /**
+     * Render the native username/password form used by the custom login designs.
+     */
+    public function getCredentialsFormHtml(): string
+    {
+        $child = $this->getLayout()->createBlock(Template::class);
+        $child->setTemplate('FalconMedia_AdminPasskey::login/credentials-form.phtml');
+        $child->assign('pageBlock', $this);
+
+        return $child->toHtml();
+    }
+}

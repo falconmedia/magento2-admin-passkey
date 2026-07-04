@@ -1,0 +1,421 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <!--
+        Passkey (WebAuthn) credentials bound to a Magento admin user.
+        public_key holds the COSE public key (public material only, never a secret).
+        device_metadata holds non-sensitive descriptive data only.
+    -->
+    <table name="falconmedia_adminpasskey_credential" resource="default" engine="innodb"
+           comment="Admin passkey WebAuthn credentials">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Credential row ID"/>
+        <column xsi:type="int" name="admin_user_id" padding="10" unsigned="true" nullable="false"
+                comment="Owner admin_user.user_id"/>
+        <column xsi:type="varchar" name="credential_id" length="512" nullable="false"
+                comment="WebAuthn credential ID (base64url)"/>
+        <column xsi:type="text" name="public_key" nullable="false"
+                comment="COSE public key material (public only)"/>
+        <column xsi:type="int" name="sign_count" padding="10" unsigned="true" nullable="false" default="0"
+                comment="WebAuthn signature counter"/>
+        <column xsi:type="varchar" name="transports" length="255" nullable="true"
+                comment="Supported authenticator transports (CSV/JSON)"/>
+        <column xsi:type="varchar" name="friendly_name" length="255" nullable="true"
+                comment="User-defined passkey name"/>
+        <column xsi:type="text" name="device_metadata" nullable="true"
+                comment="Non-sensitive device metadata (JSON)"/>
+        <column xsi:type="varchar" name="status" length="32" nullable="false" default="active"
+                comment="Status: active|revoked"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <column xsi:type="timestamp" name="last_used_at" on_update="false" nullable="true"
+                comment="Last successful assertion at"/>
+        <column xsi:type="timestamp" name="revoked_at" on_update="false" nullable="true"
+                comment="Revoked at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="FM_APK_CREDENTIAL_CREDENTIAL_ID_UNIQUE">
+            <column name="credential_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FM_APK_CREDENTIAL_ADMIN_USER_ID_FK"
+                    table="falconmedia_adminpasskey_credential" column="admin_user_id"
+                    referenceTable="admin_user" referenceColumn="user_id" onDelete="CASCADE"/>
+        <index referenceId="FM_APK_CREDENTIAL_ADMIN_USER_ID" indexType="btree">
+            <column name="admin_user_id"/>
+        </index>
+        <index referenceId="FM_APK_CREDENTIAL_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+    </table>
+
+    <!--
+        WebAuthn challenges for registration and assertion.
+        Single-use, short-lived; admin_user_id is nullable for discoverable login.
+    -->
+    <table name="falconmedia_adminpasskey_challenge" resource="default" engine="innodb"
+           comment="Admin passkey WebAuthn challenges">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Challenge row ID"/>
+        <column xsi:type="int" name="admin_user_id" padding="10" unsigned="true" nullable="true"
+                comment="Target admin_user.user_id (nullable for discoverable login)"/>
+        <column xsi:type="varchar" name="challenge" length="255" nullable="false"
+                comment="Single-use challenge value (base64url)"/>
+        <column xsi:type="varchar" name="challenge_type" length="32" nullable="false"
+                comment="Challenge type: registration|assertion"/>
+        <column xsi:type="varchar" name="status" length="32" nullable="false" default="pending"
+                comment="Status: pending|consumed|expired"/>
+        <column xsi:type="varchar" name="remote_ip" length="45" nullable="true"
+                comment="Remote IP address"/>
+        <column xsi:type="timestamp" name="expires_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Expiry timestamp"/>
+        <column xsi:type="timestamp" name="consumed_at" on_update="false" nullable="true"
+                comment="Consumed at"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FM_APK_CHALLENGE_ADMIN_USER_ID_FK"
+                    table="falconmedia_adminpasskey_challenge" column="admin_user_id"
+                    referenceTable="admin_user" referenceColumn="user_id" onDelete="CASCADE"/>
+        <index referenceId="FM_APK_CHALLENGE_ADMIN_USER_ID" indexType="btree">
+            <column name="admin_user_id"/>
+        </index>
+        <index referenceId="FM_APK_CHALLENGE_CHALLENGE_TYPE" indexType="btree">
+            <column name="challenge_type"/>
+        </index>
+        <index referenceId="FM_APK_CHALLENGE_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="FM_APK_CHALLENGE_EXPIRES_AT" indexType="btree">
+            <column name="expires_at"/>
+        </index>
+        <index referenceId="FM_APK_CHALLENGE_CHALLENGE" indexType="btree">
+            <column name="challenge"/>
+        </index>
+    </table>
+
+    <!--
+        Security audit log. Retained independently of admin users, therefore
+        actor/target references use ON DELETE SET NULL rather than CASCADE.
+        metadata must never store raw secrets.
+    -->
+    <table name="falconmedia_adminpasskey_audit" resource="default" engine="innodb"
+           comment="Admin passkey security audit log">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Audit event row ID"/>
+        <column xsi:type="varchar" name="event_type" length="128" nullable="false"
+                comment="Event type code"/>
+        <column xsi:type="int" name="actor_admin_user_id" padding="10" unsigned="true" nullable="true"
+                comment="Actor admin_user.user_id"/>
+        <column xsi:type="int" name="target_admin_user_id" padding="10" unsigned="true" nullable="true"
+                comment="Target admin_user.user_id"/>
+        <column xsi:type="varchar" name="severity" length="32" nullable="false" default="info"
+                comment="Severity: info|notice|warning|critical"/>
+        <column xsi:type="varchar" name="ip" length="45" nullable="true"
+                comment="Remote IP address"/>
+        <column xsi:type="varchar" name="user_agent" length="512" nullable="true"
+                comment="User agent string"/>
+        <column xsi:type="text" name="metadata" nullable="true"
+                comment="Non-sensitive event metadata (JSON)"/>
+        <column xsi:type="varchar" name="support_reference_id" length="64" nullable="true"
+                comment="Related support reference ID"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FM_APK_AUDIT_ACTOR_ADMIN_USER_ID_FK"
+                    table="falconmedia_adminpasskey_audit" column="actor_admin_user_id"
+                    referenceTable="admin_user" referenceColumn="user_id" onDelete="SET NULL"/>
+        <constraint xsi:type="foreign" referenceId="FM_APK_AUDIT_TARGET_ADMIN_USER_ID_FK"
+                    table="falconmedia_adminpasskey_audit" column="target_admin_user_id"
+                    referenceTable="admin_user" referenceColumn="user_id" onDelete="SET NULL"/>
+        <index referenceId="FM_APK_AUDIT_EVENT_TYPE" indexType="btree">
+            <column name="event_type"/>
+        </index>
+        <index referenceId="FM_APK_AUDIT_SEVERITY" indexType="btree">
+            <column name="severity"/>
+        </index>
+        <index referenceId="FM_APK_AUDIT_ACTOR_ADMIN_USER_ID" indexType="btree">
+            <column name="actor_admin_user_id"/>
+        </index>
+        <index referenceId="FM_APK_AUDIT_TARGET_ADMIN_USER_ID" indexType="btree">
+            <column name="target_admin_user_id"/>
+        </index>
+        <index referenceId="FM_APK_AUDIT_SUPPORT_REFERENCE_ID" indexType="btree">
+            <column name="support_reference_id"/>
+        </index>
+        <index referenceId="FM_APK_AUDIT_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+    </table>
+
+    <!--
+        Trusted devices. device_token_hash stores a hash of the device token,
+        never the raw token; metadata must not store raw secrets.
+    -->
+    <table name="falconmedia_adminpasskey_trusted_device" resource="default" engine="innodb"
+           comment="Admin passkey trusted devices">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Trusted device row ID"/>
+        <column xsi:type="int" name="admin_user_id" padding="10" unsigned="true" nullable="false"
+                comment="Owner admin_user.user_id"/>
+        <column xsi:type="varchar" name="device_token_hash" length="128" nullable="false"
+                comment="Hash of device token (never the raw token)"/>
+        <column xsi:type="varchar" name="label" length="255" nullable="true"
+                comment="Device label"/>
+        <column xsi:type="text" name="metadata" nullable="true"
+                comment="Non-sensitive device metadata (JSON)"/>
+        <column xsi:type="varchar" name="status" length="32" nullable="false" default="active"
+                comment="Status: active|revoked|expired"/>
+        <column xsi:type="timestamp" name="first_seen_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="First seen at"/>
+        <column xsi:type="timestamp" name="last_seen_at" on_update="false" nullable="true"
+                comment="Last seen at"/>
+        <column xsi:type="timestamp" name="expires_at" on_update="false" nullable="true"
+                comment="Expiry timestamp"/>
+        <column xsi:type="timestamp" name="revoked_at" on_update="false" nullable="true"
+                comment="Revoked at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="FM_APK_TRUSTED_DEVICE_TOKEN_HASH_UNIQUE">
+            <column name="device_token_hash"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FM_APK_TRUSTED_DEVICE_ADMIN_USER_ID_FK"
+                    table="falconmedia_adminpasskey_trusted_device" column="admin_user_id"
+                    referenceTable="admin_user" referenceColumn="user_id" onDelete="CASCADE"/>
+        <index referenceId="FM_APK_TRUSTED_DEVICE_ADMIN_USER_ID" indexType="btree">
+            <column name="admin_user_id"/>
+        </index>
+        <index referenceId="FM_APK_TRUSTED_DEVICE_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="FM_APK_TRUSTED_DEVICE_EXPIRES_AT" indexType="btree">
+            <column name="expires_at"/>
+        </index>
+    </table>
+
+    <!--
+        Lockouts for failed passkey/password attempts. admin_user_id is nullable
+        for username-only lockouts (SET NULL to retain lockout history).
+    -->
+    <table name="falconmedia_adminpasskey_lockout" resource="default" engine="innodb"
+           comment="Admin passkey lockouts">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Lockout row ID"/>
+        <column xsi:type="int" name="admin_user_id" padding="10" unsigned="true" nullable="true"
+                comment="Locked admin_user.user_id (nullable for username-only lockouts)"/>
+        <column xsi:type="varchar" name="username" length="255" nullable="true"
+                comment="Locked username"/>
+        <column xsi:type="varchar" name="ip" length="45" nullable="true"
+                comment="Remote IP address associated with the lockout"/>
+        <column xsi:type="varchar" name="reason" length="255" nullable="true"
+                comment="Lockout reason"/>
+        <column xsi:type="int" name="failed_attempts" padding="10" unsigned="true" nullable="false" default="0"
+                comment="Failed attempt count"/>
+        <column xsi:type="varchar" name="status" length="32" nullable="false" default="active"
+                comment="Status: active|released"/>
+        <column xsi:type="timestamp" name="locked_until" on_update="false" nullable="true"
+                comment="Locked until"/>
+        <column xsi:type="timestamp" name="unlocked_at" on_update="false" nullable="true"
+                comment="Unlocked at"/>
+        <column xsi:type="int" name="unlocked_by" padding="10" unsigned="true" nullable="true"
+                comment="admin_user.user_id that unlocked"/>
+        <column xsi:type="text" name="metadata" nullable="true"
+                comment="Non-sensitive lockout metadata (JSON)"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FM_APK_LOCKOUT_ADMIN_USER_ID_FK"
+                    table="falconmedia_adminpasskey_lockout" column="admin_user_id"
+                    referenceTable="admin_user" referenceColumn="user_id" onDelete="SET NULL"/>
+        <index referenceId="FM_APK_LOCKOUT_ADMIN_USER_ID" indexType="btree">
+            <column name="admin_user_id"/>
+        </index>
+        <index referenceId="FM_APK_LOCKOUT_USERNAME" indexType="btree">
+            <column name="username"/>
+        </index>
+        <index referenceId="FM_APK_LOCKOUT_IP" indexType="btree">
+            <column name="ip"/>
+        </index>
+        <index referenceId="FM_APK_LOCKOUT_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="FM_APK_LOCKOUT_LOCKED_UNTIL" indexType="btree">
+            <column name="locked_until"/>
+        </index>
+        <index referenceId="FM_APK_LOCKOUT_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+    </table>
+
+    <!-- Recovery mode state history (schema only in this step). -->
+    <table name="falconmedia_adminpasskey_recovery_state" resource="default" engine="innodb"
+           comment="Admin passkey recovery mode state">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Recovery state row ID"/>
+        <column xsi:type="varchar" name="state" length="32" nullable="false" default="disabled"
+                comment="State: enabled|disabled"/>
+        <column xsi:type="timestamp" name="enabled_at" on_update="false" nullable="true"
+                comment="Enabled at"/>
+        <column xsi:type="timestamp" name="disabled_at" on_update="false" nullable="true"
+                comment="Disabled at"/>
+        <column xsi:type="int" name="actor_admin_user_id" padding="10" unsigned="true" nullable="true"
+                comment="Actor admin_user.user_id"/>
+        <column xsi:type="varchar" name="reason" length="255" nullable="true"
+                comment="State change reason"/>
+        <column xsi:type="text" name="metadata" nullable="true"
+                comment="Non-sensitive metadata (JSON)"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FM_APK_RECOVERY_ACTOR_ADMIN_USER_ID_FK"
+                    table="falconmedia_adminpasskey_recovery_state" column="actor_admin_user_id"
+                    referenceTable="admin_user" referenceColumn="user_id" onDelete="SET NULL"/>
+        <index referenceId="FM_APK_RECOVERY_STATE" indexType="btree">
+            <column name="state"/>
+        </index>
+        <index referenceId="FM_APK_RECOVERY_ACTOR_ADMIN_USER_ID" indexType="btree">
+            <column name="actor_admin_user_id"/>
+        </index>
+    </table>
+
+    <!-- Diagnostics reports (schema only in this step). -->
+    <table name="falconmedia_adminpasskey_diagnostics_report" resource="default" engine="innodb"
+           comment="Admin passkey diagnostics reports">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Diagnostics report row ID"/>
+        <column xsi:type="varchar" name="support_reference_id" length="64" nullable="false"
+                comment="Support reference ID"/>
+        <column xsi:type="varchar" name="status" length="32" nullable="false" default="pending"
+                comment="Status: pending|generated|sent|failed"/>
+        <column xsi:type="text" name="files" nullable="true"
+                comment="Generated files manifest (JSON)"/>
+        <column xsi:type="text" name="counts" nullable="true"
+                comment="Report counts (JSON)"/>
+        <column xsi:type="text" name="metadata" nullable="true"
+                comment="Non-sensitive report metadata (JSON)"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="FM_APK_DIAGNOSTICS_SUPPORT_REFERENCE_ID_UNIQUE">
+            <column name="support_reference_id"/>
+        </constraint>
+        <index referenceId="FM_APK_DIAGNOSTICS_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="FM_APK_DIAGNOSTICS_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+    </table>
+
+    <!-- Security score snapshots/cache (schema only in this step). -->
+    <table name="falconmedia_adminpasskey_security_score_snapshot" resource="default" engine="innodb"
+           comment="Admin passkey security score snapshots">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Score snapshot row ID"/>
+        <column xsi:type="smallint" name="score" padding="5" unsigned="true" nullable="false" default="0"
+                comment="Score 0-100"/>
+        <column xsi:type="varchar" name="label" length="64" nullable="false"
+                comment="Score label"/>
+        <column xsi:type="text" name="category_breakdown" nullable="true"
+                comment="Per-category breakdown (JSON)"/>
+        <column xsi:type="text" name="recommendations" nullable="true"
+                comment="Recommendations (JSON)"/>
+        <column xsi:type="text" name="metadata" nullable="true"
+                comment="Non-sensitive metadata (JSON)"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="FM_APK_SCORE_SNAPSHOT_LABEL" indexType="btree">
+            <column name="label"/>
+        </index>
+        <index referenceId="FM_APK_SCORE_SNAPSHOT_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+    </table>
+
+    <!-- Cleanup logs (schema only in this step). -->
+    <table name="falconmedia_adminpasskey_cleanup_log" resource="default" engine="innodb"
+           comment="Admin passkey cleanup logs">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Cleanup log row ID"/>
+        <column xsi:type="text" name="categories" nullable="true"
+                comment="Cleaned categories (JSON)"/>
+        <column xsi:type="text" name="counts" nullable="true"
+                comment="Per-category counts (JSON)"/>
+        <column xsi:type="varchar" name="status" length="32" nullable="false" default="success"
+                comment="Status: success|failed"/>
+        <column xsi:type="text" name="metadata" nullable="true"
+                comment="Non-sensitive metadata (JSON)"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="FM_APK_CLEANUP_LOG_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="FM_APK_CLEANUP_LOG_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+    </table>
+
+    <!-- Reminder state (schema only in this step). -->
+    <table name="falconmedia_adminpasskey_reminder" resource="default" engine="innodb"
+           comment="Admin passkey reminder state">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Reminder row ID"/>
+        <column xsi:type="int" name="admin_user_id" padding="10" unsigned="true" nullable="false"
+                comment="Target admin_user.user_id"/>
+        <column xsi:type="varchar" name="reminder_type" length="64" nullable="false"
+                comment="Reminder type code"/>
+        <column xsi:type="varchar" name="status" length="32" nullable="false" default="sent"
+                comment="Status: sent|failed"/>
+        <column xsi:type="timestamp" name="sent_at" on_update="false" nullable="true"
+                comment="Sent at"/>
+        <column xsi:type="text" name="metadata" nullable="true"
+                comment="Non-sensitive metadata (JSON)"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FM_APK_REMINDER_ADMIN_USER_ID_FK"
+                    table="falconmedia_adminpasskey_reminder" column="admin_user_id"
+                    referenceTable="admin_user" referenceColumn="user_id" onDelete="CASCADE"/>
+        <index referenceId="FM_APK_REMINDER_ADMIN_USER_ID" indexType="btree">
+            <column name="admin_user_id"/>
+        </index>
+        <index referenceId="FM_APK_REMINDER_REMINDER_TYPE" indexType="btree">
+            <column name="reminder_type"/>
+        </index>
+        <index referenceId="FM_APK_REMINDER_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="FM_APK_REMINDER_SENT_AT" indexType="btree">
+            <column name="sent_at"/>
+        </index>
+    </table>
+</schema>

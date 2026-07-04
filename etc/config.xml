@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <adminpasskey>
+            <general>
+                <enabled>1</enabled>
+            </general>
+            <authentication_policy>
+                <passkey_first_login>1</passkey_first_login>
+                <password_fallback_enabled>1</password_fallback_enabled>
+                <two_fa_fallback_enabled>1</two_fa_fallback_enabled>
+            </authentication_policy>
+            <login_design>
+                <layout>spotlight</layout>
+            </login_design>
+            <login_design_spotlight>
+                <passkey_headline>Passwordless sign-in</passkey_headline>
+                <passkey_description>No username needed. Authenticate with Touch ID, Face ID, or your hardware security key.</passkey_description>
+                <passkey_button_label>Continue with passkey</passkey_button_label>
+                <password_two_fa_notice>You'll confirm with 2FA in the next step.</password_two_fa_notice>
+            </login_design_spotlight>
+            <login_design_split_console>
+                <brand_headline>eCommerce</brand_headline>
+                <brand_highlight>Dashboard</brand_highlight>
+                <brand_description>Centralised control for your Magento 2 store — sales, catalog, customers and configuration from one hardened interface.</brand_description>
+                <sign_in_title>Sign in to Admin</sign_in_title>
+                <sign_in_subtitle>Use a passkey, or your Magento admin credentials.</sign_in_subtitle>
+                <passkey_subtitle>Passwordless — no username or password</passkey_subtitle>
+                <password_two_fa_notice>Next: two-factor verification with your authenticator app.</password_two_fa_notice>
+            </login_design_split_console>
+            <login_design_command_deck>
+                <stage_headline>eCommerce Management Dashboard</stage_headline>
+                <stage_description>Sign in to operate your Magento 2 estate. Live platform health shown below.</stage_description>
+                <auth_label>Authentication Required</auth_label>
+                <sign_in_title>Sign in</sign_in_title>
+                <passkey_subtitle>Passwordless · no username</passkey_subtitle>
+                <password_two_fa_notice>Two-factor verification required next step.</password_two_fa_notice>
+                <footer_text>Protected by multi-factor authentication</footer_text>
+            </login_design_command_deck>
+            <webauthn>
+                <relying_party_name>FalconMedia Admin Passkey</relying_party_name>
+                <user_verification>preferred</user_verification>
+                <resident_key>preferred</resident_key>
+                <ceremony_timeout_ms>60000</ceremony_timeout_ms>
+                <challenge_lifetime_seconds>300</challenge_lifetime_seconds>
+            </webauthn>
+            <onboarding>
+                <require_passkey_onboarding>0</require_passkey_onboarding>
+                <recommend_second_passkey>1</recommend_second_passkey>
+            </onboarding>
+            <trusted_devices>
+                <enabled>1</enabled>
+                <lifetime_days>30</lifetime_days>
+                <successful_logins_before_trust>3</successful_logins_before_trust>
+            </trusted_devices>
+            <lockout>
+                <enabled>1</enabled>
+                <max_failed_attempts>5</max_failed_attempts>
+                <lockout_duration_minutes>15</lockout_duration_minutes>
+                <attempt_window_minutes>15</attempt_window_minutes>
+            </lockout>
+            <recovery>
+                <enabled>1</enabled>
+                <warning_text>Emergency recovery temporarily relaxes passkey enforcement so an administrator can regain access. Every recovery action is audited. Only use it when passkey authentication blocks legitimate Admin access.</warning_text>
+                <expiry_minutes>60</expiry_minutes>
+            </recovery>
+            <migration_dashboard>
+                <enabled>1</enabled>
+                <reminder_email_enabled>1</reminder_email_enabled>
+            </migration_dashboard>
+            <security_dashboard_widget>
+                <enabled>1</enabled>
+                <refresh_interval>60</refresh_interval>
+                <card_passkey_adoption>1</card_passkey_adoption>
+                <card_admins_without_passkeys>1</card_admins_without_passkeys>
+                <card_login_ratio>1</card_login_ratio>
+                <card_active_lockouts>1</card_active_lockouts>
+                <card_failed_logins_24h>1</card_failed_logins_24h>
+                <card_health_status>1</card_health_status>
+                <card_recovery_status>1</card_recovery_status>
+                <card_trusted_devices>1</card_trusted_devices>
+                <card_diagnostics_reports>1</card_diagnostics_reports>
+                <card_audit_events>1</card_audit_events>
+                <card_last_cleanup>1</card_last_cleanup>
+                <card_last_security_event>1</card_last_security_event>
+                <card_security_score>1</card_security_score>
+                <card_quick_actions>1</card_quick_actions>
+            </security_dashboard_widget>
+            <security_score>
+                <enabled>1</enabled>
+                <weight_authentication>40</weight_authentication>
+                <weight_security>25</weight_security>
+                <weight_operational>20</weight_operational>
+                <weight_threats>15</weight_threats>
+            </security_score>
+            <health_check>
+                <enabled>1</enabled>
+            </health_check>
+            <diagnostics>
+                <enabled>1</enabled>
+                <support_reference_prefix>FMAP</support_reference_prefix>
+            </diagnostics>
+            <cleanup>
+                <enabled>1</enabled>
+                <schedule>0 3 * * *</schedule>
+                <challenge_retention_days>1</challenge_retention_days>
+                <diagnostics_retention_days>30</diagnostics_retention_days>
+                <audit_retention_days>365</audit_retention_days>
+                <score_snapshot_retention_days>90</score_snapshot_retention_days>
+                <reminder_retention_days>90</reminder_retention_days>
+            </cleanup>
+            <fail2ban>
+                <enabled>0</enabled>
+                <log_path>var/log/adminpasskey_fail2ban.log</log_path>
+            </fail2ban>
+            <branding>
+                <enabled>1</enabled>
+                <company_name>FalconMedia</company_name>
+                <primary_accent_color>#f26322</primary_accent_color>
+                <secondary_accent_color>#2563eb</secondary_accent_color>
+            </branding>
+            <email_templates>
+                <reminder_template>adminpasskey_email_templates_reminder_template</reminder_template>
+                <diagnostics_template>adminpasskey_email_templates_diagnostics_template</diagnostics_template>
+                <lockout_template>adminpasskey_email_templates_lockout_template</lockout_template>
+                <recovery_template>adminpasskey_email_templates_recovery_template</recovery_template>
+                <support_template>adminpasskey_email_templates_support_template</support_template>
+                <security_alert_template>adminpasskey_email_templates_security_alert_template</security_alert_template>
+            </email_templates>
+            <developer_options>
+                <debug_logging>0</debug_logging>
+            </developer_options>
+        </adminpasskey>
+    </default>
+</config>

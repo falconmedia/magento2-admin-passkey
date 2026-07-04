@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">falconmedia_adminpasskey_migration_listing.falconmedia_adminpasskey_migration_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>falconmedia_adminpasskey_migration_columns</spinner>
+        <deps>
+            <dep>falconmedia_adminpasskey_migration_listing.falconmedia_adminpasskey_migration_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="falconmedia_adminpasskey_migration_listing_data_source"
+                component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">user_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>FalconMedia_AdminPasskey::migration</aclResource>
+        <dataProvider class="FalconMedia\AdminPasskey\Ui\Component\Migration\DataProvider"
+                      name="falconmedia_adminpasskey_migration_listing_data_source">
+            <settings>
+                <requestFieldName>user_id</requestFieldName>
+                <primaryFieldName>user_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <massaction name="listing_massaction">
+            <action name="send_reminder">
+                <settings>
+                    <confirm>
+                        <message translate="true">Send a passkey migration reminder to the selected administrators? Admins that already have a passkey are skipped.</message>
+                        <title translate="true">Send Passkey Reminder</title>
+                    </confirm>
+                    <url path="adminpasskey/migration/massSendReminder"/>
+                    <type>send_reminder</type>
+                    <label translate="true">Send Passkey Reminder</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="falconmedia_adminpasskey_migration_columns">
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>user_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="user_id" sortOrder="10">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <column name="username" sortOrder="20">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Username</label>
+            </settings>
+        </column>
+        <column name="name" sortOrder="30">
+            <settings>
+                <label translate="true">Name</label>
+            </settings>
+        </column>
+        <column name="email" sortOrder="40">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Email</label>
+            </settings>
+        </column>
+        <column name="role" sortOrder="50">
+            <settings>
+                <label translate="true">Role</label>
+            </settings>
+        </column>
+        <column name="is_active" component="Magento_Ui/js/grid/columns/select" sortOrder="60">
+            <settings>
+                <filter>select</filter>
+                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                <dataType>select</dataType>
+                <label translate="true">Active</label>
+            </settings>
+        </column>
+        <column name="twofa_status" component="Magento_Ui/js/grid/columns/select" sortOrder="70">
+            <settings>
+                <options class="FalconMedia\AdminPasskey\Model\Source\Migration\TwoFaStatus"/>
+                <dataType>select</dataType>
+                <label translate="true">2FA</label>
+            </settings>
+        </column>
+        <column name="passkey_status" component="Magento_Ui/js/grid/columns/select" sortOrder="80">
+            <settings>
+                <options class="FalconMedia\AdminPasskey\Model\Source\Migration\PasskeyStatus"/>
+                <dataType>select</dataType>
+                <label translate="true">Passkey</label>
+            </settings>
+        </column>
+        <column name="passkeys" sortOrder="90">
+            <settings>
+                <label translate="true">Passkeys</label>
+            </settings>
+        </column>
+        <column name="trusted_devices" sortOrder="100">
+            <settings>
+                <label translate="true">Trusted Devices</label>
+            </settings>
+        </column>
+        <column name="onboarding_status" component="Magento_Ui/js/grid/columns/select" sortOrder="110">
+            <settings>
+                <options class="FalconMedia\AdminPasskey\Model\Source\Migration\OnboardingStatus"/>
+                <dataType>select</dataType>
+                <label translate="true">Onboarding</label>
+            </settings>
+        </column>
+        <column name="lockout_status" component="Magento_Ui/js/grid/columns/select" sortOrder="120">
+            <settings>
+                <options class="FalconMedia\AdminPasskey\Model\Source\Migration\LockoutStatus"/>
+                <dataType>select</dataType>
+                <label translate="true">Lockout</label>
+            </settings>
+        </column>
+        <column name="logdate" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date" sortOrder="130">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Last Login</label>
+            </settings>
+        </column>
+        <column name="last_passkey_login" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date" sortOrder="140">
+            <settings>
+                <dataType>date</dataType>
+                <label translate="true">Last Passkey Login</label>
+            </settings>
+        </column>
+    </columns>
+</listing>

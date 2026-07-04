@@ -1,0 +1,31 @@
+<?php
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ *
+ * @var \Magento\Backend\Block\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+/** @var \FalconMedia\AdminPasskey\ViewModel\Branding\Branding|null $branding */
+$branding = $block->getData('branding');
+?>
+<?php if ($branding !== null): ?>
+    <p class="falconmedia-adminpasskey-diagnostics-intro"
+       style="color:<?= $escaper->escapeHtmlAttr($branding->getPrimaryAccentColor()) ?>;">
+        <?= $escaper->escapeHtml($branding->getDiagnosticsIntroText()) ?>
+        <?= $escaper->escapeHtml(__('Support: %1', $branding->getSupportEmail())) ?>
+    </p>
+<?php endif; ?>
+<div class="falconmedia-adminpasskey-diagnostics-toolbar" style="margin-bottom:1rem;">
+    <form action="<?= $escaper->escapeUrl($block->getUrl('adminpasskey/diagnostics/generate')) ?>" method="post">
+        <?= /* @noEscape */ $block->getBlockHtml('formkey') ?>
+        <button type="submit" class="action-primary">
+            <span><?= $escaper->escapeHtml(__('Generate Diagnostics Bundle')) ?></span>
+        </button>
+        <span class="note" style="margin-left:1rem;">
+            <?= $escaper->escapeHtml(
+                __('Bundles never contain passwords, keys or tokens. Logs are sanitised.')
+            ) ?>
+        </span>
+    </form>
+</div>

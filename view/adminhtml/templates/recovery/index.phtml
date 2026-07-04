@@ -1,0 +1,83 @@
+<?php
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ *
+ * @var \FalconMedia\AdminPasskey\Block\Adminhtml\Recovery\Index $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$isActive = $block->isRecoveryActive();
+$currentState = $block->getCurrentState();
+$warningText = $block->getWarningText();
+$expiryMinutes = $block->getExpiryMinutes();
+?>
+<div class="admin__page-section adminpasskey-recovery">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $escaper->escapeHtml(__('Emergency Recovery Mode')) ?></span>
+    </div>
+
+    <div class="admin__field-note adminpasskey-recovery-status">
+        <?php if ($isActive): ?>
+            <strong class="adminpasskey-recovery-state adminpasskey-recovery-state--on">
+                <?= $escaper->escapeHtml(__('Recovery mode is currently ENABLED.')) ?>
+            </strong>
+        <?php else: ?>
+            <strong class="adminpasskey-recovery-state adminpasskey-recovery-state--off">
+                <?= $escaper->escapeHtml(__('Recovery mode is currently disabled.')) ?>
+            </strong>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($currentState !== null): ?>
+        <table class="data-table admin__table-primary adminpasskey-recovery-details">
+            <tbody>
+                <tr>
+                    <th><?= $escaper->escapeHtml(__('Last State')) ?></th>
+                    <td><?= $escaper->escapeHtml((string) $currentState->getState()) ?></td>
+                </tr>
+                <tr>
+                    <th><?= $escaper->escapeHtml(__('Enabled At')) ?></th>
+                    <td><?= $escaper->escapeHtml((string) ($currentState->getEnabledAt() ?? '—')) ?></td>
+                </tr>
+                <tr>
+                    <th><?= $escaper->escapeHtml(__('Disabled At')) ?></th>
+                    <td><?= $escaper->escapeHtml((string) ($currentState->getDisabledAt() ?? '—')) ?></td>
+                </tr>
+            </tbody>
+        </table>
+    <?php endif; ?>
+
+    <div class="message message-warning adminpasskey-recovery-warning">
+        <span><?= $escaper->escapeHtml($warningText) ?></span>
+    </div>
+
+    <div class="admin__field-note">
+        <?= $escaper->escapeHtml(
+            __('Recovery mode auto-expires after %1 minutes so it can never stay on indefinitely.', $expiryMinutes)
+        ) ?>
+    </div>
+
+    <div class="adminpasskey-recovery-actions">
+        <?php if ($isActive): ?>
+            <form action="<?= $escaper->escapeUrl($block->getDisableUrl()) ?>" method="post"
+                  onsubmit="return window.confirm('<?= $escaper->escapeJs(__('Disable emergency recovery mode now?')) ?>');">
+                <input name="form_key" type="hidden" value="<?= $escaper->escapeHtmlAttr($block->getFormKeyValue()) ?>"/>
+                <input name="reason" type="text"
+                       placeholder="<?= $escaper->escapeHtmlAttr(__('Reason (optional)')) ?>"/>
+                <button type="submit" class="action-secondary">
+                    <span><?= $escaper->escapeHtml(__('Disable Recovery Mode')) ?></span>
+                </button>
+            </form>
+        <?php else: ?>
+            <form action="<?= $escaper->escapeUrl($block->getEnableUrl()) ?>" method="post"
+                  onsubmit="return window.confirm('<?= $escaper->escapeJs(__('Enable emergency recovery mode? This is audited and should only be used to restore blocked Admin access.')) ?>');">
+                <input name="form_key" type="hidden" value="<?= $escaper->escapeHtmlAttr($block->getFormKeyValue()) ?>"/>
+                <input name="reason" type="text"
+                       placeholder="<?= $escaper->escapeHtmlAttr(__('Reason (optional)')) ?>"/>
+                <button type="submit" class="action-primary">
+                    <span><?= $escaper->escapeHtml(__('Enable Recovery Mode')) ?></span>
+                </button>
+            </form>
+        <?php endif; ?>
+    </div>
+</div>

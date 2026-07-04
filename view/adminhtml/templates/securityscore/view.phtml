@@ -1,0 +1,65 @@
+<?php
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ *
+ * @var \FalconMedia\AdminPasskey\Block\Adminhtml\SecurityScore\View $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$result = $block->getResult();
+?>
+<div class="admin__page-section falconmedia-adminpasskey-score">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $escaper->escapeHtml(__('Current Security Score')) ?></span>
+        <form action="<?= $escaper->escapeUrl($block->getSnapshotUrl()) ?>" method="post" style="display:inline-block; margin-left:1rem;">
+            <?= /* @noEscape */ $block->getBlockHtml('formkey') ?>
+            <button type="submit" class="action-secondary">
+                <span><?= $escaper->escapeHtml(__('Recalculate & Snapshot')) ?></span>
+            </button>
+        </form>
+    </div>
+
+    <p class="falconmedia-adminpasskey-score__value">
+        <span class="<?= $escaper->escapeHtmlAttr($block->getScoreClass($result->getScore())) ?>"
+              style="font-size:2rem; font-weight:700;">
+            <?= $escaper->escapeHtml((string) $result->getScore()) ?>/100
+        </span>
+        <span><?= $escaper->escapeHtml(__('Rating: %1', $result->getLabel())) ?></span>
+    </p>
+
+    <div class="admin__page-section-title">
+        <span class="title"><?= $escaper->escapeHtml(__('Category Breakdown')) ?></span>
+    </div>
+    <table class="admin__table-primary">
+        <thead>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Category')) ?></th>
+                <th><?= $escaper->escapeHtml(__('Score')) ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($result->getBreakdown() as $category => $score): ?>
+                <tr>
+                    <td><?= $escaper->escapeHtml(ucfirst((string) $category)) ?></td>
+                    <td><?= $escaper->escapeHtml((string) $score) ?>/100</td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <?php $recommendations = $result->getRecommendations(); ?>
+    <?php if ($recommendations !== []): ?>
+        <div class="admin__page-section-title">
+            <span class="title"><?= $escaper->escapeHtml(__('Recommendations')) ?></span>
+        </div>
+        <ul class="messages">
+            <?php foreach ($recommendations as $recommendation): ?>
+                <li class="message message-warning">
+                    <?= $escaper->escapeHtml((string) ($recommendation['message'] ?? '')) ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p><?= $escaper->escapeHtml(__('No recommendations — your configuration looks great.')) ?></p>
+    <?php endif; ?>
+</div>

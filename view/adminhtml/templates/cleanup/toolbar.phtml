@@ -1,0 +1,22 @@
+<?php
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ *
+ * @var \Magento\Backend\Block\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+?>
+<div class="falconmedia-adminpasskey-cleanup-toolbar" style="margin-bottom:1rem;">
+    <form action="<?= $escaper->escapeUrl($block->getUrl('adminpasskey/cleanup/run')) ?>" method="post">
+        <?= /* @noEscape */ $block->getBlockHtml('formkey') ?>
+        <button type="submit" class="action-primary">
+            <span><?= $escaper->escapeHtml(__('Run Cleanup Now')) ?></span>
+        </button>
+        <span class="note" style="margin-left:1rem;">
+            <?= $escaper->escapeHtml(
+                __('Removes expired data per the configured retention windows.')
+            ) ?>
+        </span>
+    </form>
+</div>

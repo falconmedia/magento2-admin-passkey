@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="FalconMedia_AdminPasskey::reports"
+             title="Admin Passkey"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="100"
+             parent="Magento_Reports::report"
+             resource="FalconMedia_AdminPasskey::admin_passkey"/>
+        <add id="FalconMedia_AdminPasskey::audit_log"
+             title="Audit Log"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="10"
+             parent="FalconMedia_AdminPasskey::reports"
+             action="adminpasskey/audit/index"
+             resource="FalconMedia_AdminPasskey::audit_log"/>
+        <add id="FalconMedia_AdminPasskey::lockouts"
+             title="Lockouts"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="20"
+             parent="FalconMedia_AdminPasskey::reports"
+             action="adminpasskey/lockout/index"
+             resource="FalconMedia_AdminPasskey::lockouts"/>
+        <add id="FalconMedia_AdminPasskey::health"
+             title="Health Check"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="30"
+             parent="FalconMedia_AdminPasskey::reports"
+             action="adminpasskey/health/index"
+             resource="FalconMedia_AdminPasskey::health"/>
+        <add id="FalconMedia_AdminPasskey::security_score"
+             title="Security Score"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="40"
+             parent="FalconMedia_AdminPasskey::reports"
+             action="adminpasskey/securityscore/index"
+             resource="FalconMedia_AdminPasskey::security_score"/>
+        <add id="FalconMedia_AdminPasskey::diagnostics"
+             title="Diagnostics"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="50"
+             parent="FalconMedia_AdminPasskey::reports"
+             action="adminpasskey/diagnostics/index"
+             resource="FalconMedia_AdminPasskey::diagnostics"/>
+
+        <add id="FalconMedia_AdminPasskey::system"
+             title="Admin Passkey"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="75"
+             parent="Magento_Backend::system"
+             resource="FalconMedia_AdminPasskey::admin_passkey"/>
+        <add id="FalconMedia_AdminPasskey::trusted_devices"
+             title="Trusted Devices"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="10"
+             parent="FalconMedia_AdminPasskey::system"
+             action="adminpasskey/trusteddevice/index"
+             resource="FalconMedia_AdminPasskey::trusted_devices"/>
+        <add id="FalconMedia_AdminPasskey::migration"
+             title="Migration Dashboard"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="20"
+             parent="FalconMedia_AdminPasskey::system"
+             action="adminpasskey/migration/index"
+             resource="FalconMedia_AdminPasskey::migration"/>
+        <add id="FalconMedia_AdminPasskey::cleanup"
+             title="Data Cleanup"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="30"
+             parent="FalconMedia_AdminPasskey::system"
+             action="adminpasskey/cleanup/index"
+             resource="FalconMedia_AdminPasskey::diagnostics"/>
+        <add id="FalconMedia_AdminPasskey::recovery"
+             title="Recovery"
+             translate="title"
+             module="FalconMedia_AdminPasskey"
+             sortOrder="40"
+             parent="FalconMedia_AdminPasskey::system"
+             action="adminpasskey/recovery/index"
+             resource="FalconMedia_AdminPasskey::recovery"/>
+        <!-- My Passkeys is shown on the admin's own Account Setting page
+             (adminhtml_system_account_index.xml); no separate menu/dropdown item. -->
+    </menu>
+</config>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="FalconMedia_AdminPasskey::css/login-design.css"/>
+    </head>
+    <body>
+        <referenceBlock name="admin.login"
+                        class="FalconMedia\AdminPasskey\Block\Adminhtml\Login\Page">
+            <arguments>
+                <argument name="branding" xsi:type="object">FalconMedia\AdminPasskey\ViewModel\Branding\Branding</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

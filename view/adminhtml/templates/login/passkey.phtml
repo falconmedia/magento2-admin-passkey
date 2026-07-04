@@ -1,0 +1,29 @@
+<?php
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ *
+ * @var \FalconMedia\AdminPasskey\Block\Adminhtml\Login\Passkey $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+/** @var \FalconMedia\AdminPasskey\ViewModel\Branding\Branding|null $branding */
+$branding = $block->getData('branding');
+?>
+<?php if ($block->isPasskeyLoginEnabled()): ?>
+    <?php // CSP-safe: the JS component is bound via data-mage-init and injects the
+          // passkey button into the login form only when WebAuthn is available. ?>
+    <?php if ($branding !== null): ?>
+        <div class="adminpasskey-login__branding"
+             style="text-align:center;margin-bottom:1rem;color:<?= $escaper->escapeHtmlAttr($branding->getPrimaryAccentColor()) ?>;">
+            <?php $logoUrl = $branding->getLogoUrl(); ?>
+            <?php if ($logoUrl !== null): ?>
+                <img src="<?= $escaper->escapeUrl($logoUrl) ?>"
+                     alt="<?= $escaper->escapeHtmlAttr($branding->getCompanyName()) ?>"
+                     style="max-height:48px;width:auto;"/>
+            <?php endif; ?>
+            <p class="adminpasskey-login__intro"><?= $escaper->escapeHtml($branding->getLoginIntroText()) ?></p>
+        </div>
+    <?php endif; ?>
+    <div class="adminpasskey-login"
+         data-mage-init='<?= $escaper->escapeHtmlAttr($block->getMageInitJson()) ?>'></div>
+<?php endif; ?>

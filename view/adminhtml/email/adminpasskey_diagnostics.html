@@ -1,0 +1,22 @@
+<!--@subject {{trans "Admin Passkey diagnostics report %reference" reference=$support_reference_id}} @-->
+<!--@vars {
+"var support_reference_id":"Support reference ID",
+"var company_name":"Company name",
+"var support_email":"Support email",
+"var accent_color":"Accent color",
+"var footer_text":"Footer text",
+"var generated_at":"Generated at",
+"var summary":"Report summary"
+} @-->
+<body>
+    <p style="color:{{var accent_color}};font-weight:bold;">{{var company_name}}</p>
+    <p>{{trans "A support diagnostics bundle has been prepared."}}</p>
+    <p>{{trans "Support Reference ID:"}} <strong>{{var support_reference_id}}</strong></p>
+    <p>{{trans "Generated at:"}} {{var generated_at}}</p>
+    <p>{{trans "This bundle contains no passwords, keys or tokens. Sensitive log data is sanitised."}}</p>
+    <p>{{trans "Summary:"}}</p>
+    <pre>{{var summary}}</pre>
+    <p>{{trans "Download the full bundle from the Admin under Reports &gt; Admin Passkey &gt; Diagnostics."}}</p>
+    <hr/>
+    <p style="color:#888;font-size:12px;">{{var footer_text}}</p>
+</body>

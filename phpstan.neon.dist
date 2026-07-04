@@ -1,0 +1,16 @@
+# Copyright (c) FalconMedia. All rights reserved.
+# See LICENSE for license details.
+#
+# Module-scoped PHPStan config. It reuses the Magento PHPStan configuration
+# (bootstrap, extensions, ignore rules) shipped with the project and only adds
+# this module's source paths, so it does not conflict with the core setup.
+includes:
+    - ../../../../dev/tests/static/testsuite/Magento/Test/Php/_files/phpstan/phpstan.neon
+
+parameters:
+    level: 6
+    paths:
+        - Model
+        - Console
+    excludePaths:
+        - Test/*

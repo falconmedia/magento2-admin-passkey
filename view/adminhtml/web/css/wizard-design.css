@@ -1,0 +1,518 @@
+/**
+ * Admin Passkey setup wizard — standalone full-page modal.
+ *
+ * Renders as a fixed overlay above the whole Admin (blurred behind), so the
+ * wizard reads as an independent page rather than dashboard content.
+ */
+body.apk-wiz-page {
+    overflow: hidden;
+}
+
+.apk-wiz {
+    --apk-accent: #f26322;
+    --apk-accent-hover: #ff6f2e;
+    --apk-on-accent: #1a0a02;
+    --apk-text: #e8eaf0;
+    --apk-muted: #b0b4c4;
+    --apk-faint: #8a90a6;
+    --apk-dim: #6d7386;
+    --apk-ok: #34d399;
+    font-family: Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.apk-wiz *,
+.apk-wiz *::before,
+.apk-wiz *::after {
+    box-sizing: border-box;
+}
+
+@keyframes apk-wiz-pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.85); } }
+@keyframes apk-wiz-spin { to { transform: rotate(360deg); } }
+@keyframes apk-wiz-ping { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(1.7); opacity: 0; } }
+@keyframes apk-wiz-pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes apk-wiz-rise { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .apk-wiz * { animation: none !important; }
+}
+
+.apk-wiz__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: rgba(6, 7, 10, 0.66);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.apk-wiz__center {
+    position: fixed;
+    inset: 0;
+    z-index: 100001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+}
+
+.apk-wiz__modal {
+    position: relative;
+    width: 560px;
+    max-width: 100%;
+    background: #14171f;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 20px;
+    box-shadow: 0 50px 110px -30px rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+}
+
+.apk-wiz__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--apk-faint);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.apk-wiz__close[hidden],
+.apk-wiz__signout[hidden] {
+    display: none;
+}
+
+.apk-wiz__close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--apk-text);
+}
+
+/* Magento admin base CSS otherwise collapses the inline svg. */
+.apk-wiz__close svg {
+    display: block;
+    width: 15px;
+    height: 15px;
+    flex: none;
+}
+
+.apk-wiz__signout {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    z-index: 2;
+    background: none;
+    border: none;
+    color: var(--apk-faint);
+    cursor: pointer;
+    text-decoration: none;
+    font: 500 12px Inter, system-ui, sans-serif;
+}
+
+.apk-wiz__signout:hover {
+    color: var(--apk-text);
+}
+
+.apk-wiz__inner {
+    padding: 34px 40px 32px;
+}
+
+/* Branding zone */
+.apk-wiz__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    margin-bottom: 26px;
+}
+
+.apk-wiz__brand-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: rgba(242, 99, 34, 0.12);
+    border: 1px solid rgba(242, 99, 34, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.apk-wiz__brand-text {
+    font: 500 13px Inter, system-ui, sans-serif;
+    color: var(--apk-accent);
+}
+
+/* Progress */
+.apk-wiz__progress {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.apk-wiz__prog-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+    width: 64px;
+}
+
+.apk-wiz__prog-dot {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 600 12px "JetBrains Mono", monospace;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    color: var(--apk-dim);
+}
+
+.apk-wiz__prog-check {
+    display: none;
+    line-height: 0;
+}
+
+.apk-wiz__prog-step.is-active .apk-wiz__prog-dot {
+    background: rgba(242, 99, 34, 0.14);
+    border-color: var(--apk-accent);
+    color: var(--apk-accent);
+}
+
+.apk-wiz__prog-step.is-done .apk-wiz__prog-dot {
+    background: var(--apk-accent);
+    border-color: var(--apk-accent);
+    color: var(--apk-on-accent);
+}
+
+.apk-wiz__prog-step.is-done .apk-wiz__prog-num {
+    display: none;
+}
+
+.apk-wiz__prog-step.is-done .apk-wiz__prog-check {
+    display: inline-flex;
+}
+
+.apk-wiz__prog-label {
+    font: 600 10px Inter, system-ui, sans-serif;
+    letter-spacing: 0.02em;
+    color: var(--apk-dim);
+    white-space: nowrap;
+}
+
+.apk-wiz__prog-step.is-active .apk-wiz__prog-label,
+.apk-wiz__prog-step.is-done .apk-wiz__prog-label {
+    color: var(--apk-text);
+}
+
+.apk-wiz__prog-line {
+    flex: 1;
+    height: 1.5px;
+    margin: 0 -6px 22px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.apk-wiz__prog-line.is-done {
+    background: var(--apk-accent);
+}
+
+/* Steps */
+.apk-wiz__content {
+    min-height: 236px;
+    display: flex;
+    flex-direction: column;
+}
+
+.apk-wiz__step {
+    animation: apk-wiz-rise 0.3s ease both;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.apk-wiz__step[hidden] {
+    display: none;
+}
+
+.apk-wiz__step--center {
+    align-items: center;
+    text-align: center;
+}
+
+.apk-wiz__title {
+    margin: 0 0 10px;
+    font: 600 22px Inter, system-ui, sans-serif;
+    color: var(--apk-text);
+    letter-spacing: -0.01em;
+}
+
+.apk-wiz__title--center {
+    text-align: center;
+    margin-bottom: 14px;
+    line-height: 1.25;
+}
+
+.apk-wiz__title--lg {
+    font-size: 24px;
+}
+
+.apk-wiz__text {
+    margin: 0 0 24px;
+    font: 400 13.5px/1.6 Inter, system-ui, sans-serif;
+    color: var(--apk-muted);
+    max-width: 360px;
+}
+
+.apk-wiz__step--center .apk-wiz__text {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Welcome bullets */
+.apk-wiz__bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.apk-wiz__bullet {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+}
+
+.apk-wiz__bullet svg {
+    flex: none;
+    margin-top: 1px;
+}
+
+.apk-wiz__bullet span {
+    font: 400 13.5px/1.6 Inter, system-ui, sans-serif;
+    color: var(--apk-muted);
+}
+
+/* Register ring */
+.apk-wiz__ring {
+    position: relative;
+    width: 78px;
+    height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px 0 18px;
+}
+
+.apk-wiz__ring svg {
+    position: relative;
+    z-index: 1;
+}
+
+.apk-wiz__ring-fill {
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    background: rgba(242, 99, 34, 0.12);
+}
+
+.apk-wiz__ring-ping {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(242, 99, 34, 0.5);
+    display: none;
+}
+
+.apk-wiz.is-waiting .apk-wiz__ring-ping {
+    display: block;
+    animation: apk-wiz-ping 1.6s ease-out infinite;
+}
+
+/* Success / finish badges */
+.apk-wiz__success-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.apk-wiz__badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.apk-wiz__badge--ok {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(52, 211, 153, 0.14);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    margin-bottom: 14px;
+    animation: apk-wiz-pop 0.4s ease both;
+}
+
+.apk-wiz__badge--done {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--apk-ok);
+    margin: 2px 0 16px;
+    box-shadow: 0 0 0 10px rgba(52, 211, 153, 0.14);
+    animation: apk-wiz-pop 0.45s ease both;
+}
+
+/* Field */
+.apk-wiz__field {
+    margin-bottom: auto;
+}
+
+.apk-wiz__label {
+    display: block;
+    font: 500 12.5px Inter, system-ui, sans-serif;
+    color: var(--apk-muted);
+    margin-bottom: 7px;
+}
+
+.apk-wiz__input {
+    width: 100%;
+    background: #1e2130;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9px;
+    padding: 12px 14px;
+    color: var(--apk-text);
+    font: 400 14px Inter, system-ui, sans-serif;
+    outline: none;
+}
+
+.apk-wiz__input::placeholder {
+    color: #5b6172;
+}
+
+.apk-wiz__input:focus {
+    border-color: var(--apk-accent);
+    box-shadow: 0 0 0 3px rgba(242, 99, 34, 0.14);
+}
+
+.apk-wiz__input.is-error {
+    border-color: #f2564a;
+}
+
+.apk-wiz__field-error {
+    margin: 9px 0 0;
+    font: 500 12px Inter, system-ui, sans-serif;
+    color: #f2564a;
+    min-height: 1em;
+}
+
+.apk-wiz__field-error:empty {
+    display: none;
+}
+
+/* Actions + buttons */
+.apk-wiz__actions {
+    margin-top: auto;
+}
+
+.apk-wiz__actions--stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.apk-wiz__btn {
+    width: 100%;
+    border: none;
+    border-radius: 9px;
+    padding: 13px;
+    font: 600 14px Inter, system-ui, sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.apk-wiz__btn--primary {
+    background: var(--apk-accent);
+    color: var(--apk-on-accent);
+}
+
+.apk-wiz__btn--primary:hover {
+    background: var(--apk-accent-hover);
+}
+
+.apk-wiz__btn--primary:disabled {
+    background: rgba(242, 99, 34, 0.4);
+    color: rgba(26, 10, 2, 0.7);
+    cursor: not-allowed;
+}
+
+.apk-wiz__btn--ghost {
+    background: transparent;
+    color: var(--apk-text);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.apk-wiz__btn--ghost:hover {
+    border-color: rgba(255, 255, 255, 0.32);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.apk-wiz__spinner {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid rgba(26, 10, 2, 0.35);
+    border-top-color: var(--apk-on-accent);
+    animation: apk-wiz-spin 0.7s linear infinite;
+}
+
+.apk-wiz__spinner[hidden] {
+    display: none;
+}
+
+/* Status line under register */
+.apk-wiz__status {
+    margin: 14px 0 0;
+    min-height: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font: 500 12.5px Inter, system-ui, sans-serif;
+    color: var(--apk-faint);
+}
+
+.apk-wiz__status:empty {
+    display: none;
+}
+
+.apk-wiz__status--error {
+    color: #f2564a;
+}
+
+@media (max-width: 620px) {
+    .apk-wiz__inner {
+        padding: 28px 22px 24px;
+    }
+
+    .apk-wiz__prog-label {
+        display: none;
+    }
+}

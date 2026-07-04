@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!--
+        Admin-area only: enforce passkey onboarding after login. The observer and
+        its policy exempt the wizard, the module's passkey endpoints, recovery and
+        the native login/logout actions, so an admin is never permanently trapped.
+    -->
+    <event name="controller_action_predispatch">
+        <observer name="falconmedia_adminpasskey_require_onboarding"
+                  instance="FalconMedia\AdminPasskey\Observer\RequirePasskeyOnboarding"/>
+    </event>
+    <!--
+        Successful login (password and passkey both dispatch this): clear failure
+        tracking and remember the browser as a trusted device once the threshold is
+        reached.
+    -->
+    <event name="backend_auth_user_login_success">
+        <observer name="falconmedia_adminpasskey_handle_successful_login"
+                  instance="FalconMedia\AdminPasskey\Observer\HandleSuccessfulLogin"/>
+    </event>
+    <!-- Failed native (password) login: feed the durable lockout counter. -->
+    <event name="backend_auth_user_login_failed">
+        <observer name="falconmedia_adminpasskey_handle_failed_login"
+                  instance="FalconMedia\AdminPasskey\Observer\HandleFailedLogin"/>
+    </event>
+</config>

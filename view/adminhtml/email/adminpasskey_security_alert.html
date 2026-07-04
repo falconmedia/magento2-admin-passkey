@@ -1,0 +1,23 @@
+<!--@subject {{trans "Security alert: %event" event=$event_type}} @-->
+<!--@vars {
+"var admin_name":"Admin name",
+"var event_type":"Event type",
+"var severity":"Severity",
+"var detected_at":"Detected at",
+"var company_name":"Company name",
+"var support_email":"Support email",
+"var support_url":"Support URL",
+"var accent_color":"Accent color",
+"var footer_text":"Footer text"
+} @-->
+<body>
+    <p style="color:{{var accent_color}};font-weight:bold;">{{var company_name}}</p>
+    <p>{{trans "Hello %name," name=$admin_name}}</p>
+    <p>{{trans "A security event was detected on your Magento Admin."}}</p>
+    <p>{{trans "Event:"}} <strong>{{var event_type}}</strong></p>
+    <p>{{trans "Severity:"}} {{var severity}}</p>
+    <p>{{trans "Detected at:"}} {{var detected_at}}</p>
+    <p>{{trans "Please review the Admin Passkey audit log. If you need assistance, contact support at %email." email=$support_email}}</p>
+    <hr/>
+    <p style="color:#888;font-size:12px;">{{var footer_text}}</p>
+</body>

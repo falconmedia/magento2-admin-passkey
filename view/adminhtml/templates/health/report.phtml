@@ -1,0 +1,47 @@
+<?php
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ *
+ * @var \FalconMedia\AdminPasskey\Block\Adminhtml\Health\Report $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$report = $block->getReport();
+$overall = $report->getOverallStatus();
+?>
+<div class="admin__page-section falconmedia-adminpasskey-health">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $escaper->escapeHtml(__('Health Overview')) ?></span>
+    </div>
+    <p>
+        <span class="<?= $escaper->escapeHtmlAttr($block->getStatusClass($overall)) ?>">
+            <?= $escaper->escapeHtml(__('Overall status: %1', ucfirst($overall))) ?>
+        </span>
+        &mdash;
+        <?= $escaper->escapeHtml(
+            __('%1 error(s), %2 warning(s).', $report->getErrorCount(), $report->getWarningCount())
+        ) ?>
+    </p>
+    <table class="admin__table-primary">
+        <thead>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Check')) ?></th>
+                <th><?= $escaper->escapeHtml(__('Status')) ?></th>
+                <th><?= $escaper->escapeHtml(__('Details')) ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($report->getResults() as $result): ?>
+                <tr>
+                    <td><?= $escaper->escapeHtml($result->getLabel()) ?></td>
+                    <td>
+                        <span class="<?= $escaper->escapeHtmlAttr($block->getStatusClass($result->getStatus())) ?>">
+                            <?= $escaper->escapeHtml(ucfirst($result->getStatus())) ?>
+                        </span>
+                    </td>
+                    <td><?= $escaper->escapeHtml($result->getMessage()) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

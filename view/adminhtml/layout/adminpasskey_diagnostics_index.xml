@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="styles"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="Magento\Backend\Block\Template"
+                   name="falconmedia_adminpasskey_diagnostics_toolbar"
+                   template="FalconMedia_AdminPasskey::diagnostics/toolbar.phtml">
+                <arguments>
+                    <argument name="branding" xsi:type="object">FalconMedia\AdminPasskey\ViewModel\Branding\Branding</argument>
+                </arguments>
+            </block>
+            <uiComponent name="falconmedia_adminpasskey_diagnostics_listing"/>
+        </referenceContainer>
+    </body>
+</page>

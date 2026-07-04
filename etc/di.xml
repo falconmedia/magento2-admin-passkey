@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Data interface bindings (only entities implemented in this step). -->
+    <preference for="FalconMedia\AdminPasskey\Api\Data\CredentialInterface"
+                type="FalconMedia\AdminPasskey\Model\Credential"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\ChallengeInterface"
+                type="FalconMedia\AdminPasskey\Model\Challenge"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\AuditEventInterface"
+                type="FalconMedia\AdminPasskey\Model\AuditEvent"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\TrustedDeviceInterface"
+                type="FalconMedia\AdminPasskey\Model\TrustedDevice"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\LockoutInterface"
+                type="FalconMedia\AdminPasskey\Model\Lockout"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\RecoveryStateInterface"
+                type="FalconMedia\AdminPasskey\Model\RecoveryState"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\DiagnosticsReportInterface"
+                type="FalconMedia\AdminPasskey\Model\DiagnosticsReport"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\SecurityScoreSnapshotInterface"
+                type="FalconMedia\AdminPasskey\Model\SecurityScoreSnapshot"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\CleanupLogInterface"
+                type="FalconMedia\AdminPasskey\Model\CleanupLog"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\ReminderInterface"
+                type="FalconMedia\AdminPasskey\Model\Reminder"/>
+
+    <!-- Search result interface bindings (typed concrete containers satisfying the module contracts). -->
+    <preference for="FalconMedia\AdminPasskey\Api\Data\CredentialSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\CredentialSearchResults"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\ChallengeSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\ChallengeSearchResults"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\AuditEventSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\AuditEventSearchResults"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\TrustedDeviceSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\TrustedDeviceSearchResults"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\LockoutSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\LockoutSearchResults"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\RecoveryStateSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\RecoveryStateSearchResults"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\DiagnosticsReportSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\DiagnosticsReportSearchResults"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\SecurityScoreSnapshotSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\SecurityScoreSnapshotSearchResults"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\CleanupLogSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\CleanupLogSearchResults"/>
+    <preference for="FalconMedia\AdminPasskey\Api\Data\ReminderSearchResultsInterface"
+                type="FalconMedia\AdminPasskey\Model\SearchResults\ReminderSearchResults"/>
+
+    <!-- Repository/service-contract bindings (only entities implemented in this step). -->
+    <preference for="FalconMedia\AdminPasskey\Api\CredentialRepositoryInterface"
+                type="FalconMedia\AdminPasskey\Model\CredentialRepository"/>
+    <preference for="FalconMedia\AdminPasskey\Api\ChallengeRepositoryInterface"
+                type="FalconMedia\AdminPasskey\Model\ChallengeRepository"/>
+    <preference for="FalconMedia\AdminPasskey\Api\AuditLogInterface"
+                type="FalconMedia\AdminPasskey\Model\AuditLog"/>
+    <preference for="FalconMedia\AdminPasskey\Api\TrustedDeviceRepositoryInterface"
+                type="FalconMedia\AdminPasskey\Model\TrustedDeviceRepository"/>
+    <preference for="FalconMedia\AdminPasskey\Api\LockoutRepositoryInterface"
+                type="FalconMedia\AdminPasskey\Model\LockoutRepository"/>
+    <preference for="FalconMedia\AdminPasskey\Api\RecoveryStateRepositoryInterface"
+                type="FalconMedia\AdminPasskey\Model\RecoveryStateRepository"/>
+    <preference for="FalconMedia\AdminPasskey\Api\DiagnosticsReportRepositoryInterface"
+                type="FalconMedia\AdminPasskey\Model\DiagnosticsReportRepository"/>
+    <preference for="FalconMedia\AdminPasskey\Api\SecurityScoreSnapshotRepositoryInterface"
+                type="FalconMedia\AdminPasskey\Model\SecurityScoreSnapshotRepository"/>
+    <preference for="FalconMedia\AdminPasskey\Api\CleanupLogRepositoryInterface"
+                type="FalconMedia\AdminPasskey\Model\CleanupLogRepository"/>
+    <preference for="FalconMedia\AdminPasskey\Api\ReminderRepositoryInterface"
+                type="FalconMedia\AdminPasskey\Model\ReminderRepository"/>
+
+    <!-- Step 14 service-contract bindings. -->
+    <preference for="FalconMedia\AdminPasskey\Model\Migration\ReminderServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\Migration\ReminderService"/>
+    <preference for="FalconMedia\AdminPasskey\Model\Health\HealthCheckServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\Health\HealthCheckService"/>
+    <preference for="FalconMedia\AdminPasskey\Model\SecurityScore\SecurityScoreServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\SecurityScore\SecurityScoreService"/>
+    <preference for="FalconMedia\AdminPasskey\Model\Diagnostics\DiagnosticsServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\Diagnostics\DiagnosticsService"/>
+    <preference for="FalconMedia\AdminPasskey\Model\Cleanup\CleanupServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\Cleanup\CleanupService"/>
+
+    <!-- High-level audit recording service. -->
+    <preference for="FalconMedia\AdminPasskey\Api\AuditLoggerInterface"
+                type="FalconMedia\AdminPasskey\Model\Audit\AuditLogger"/>
+
+    <!-- Step 15 service-contract bindings (dashboard widget + branded email). -->
+    <preference for="FalconMedia\AdminPasskey\Model\Dashboard\DashboardMetricsProviderInterface"
+                type="FalconMedia\AdminPasskey\Model\Dashboard\DashboardMetricsProvider"/>
+    <preference for="FalconMedia\AdminPasskey\Model\Email\BrandedEmailSenderInterface"
+                type="FalconMedia\AdminPasskey\Model\Email\BrandedEmailSender"/>
+
+    <!-- Operational protection services (Step 13). -->
+    <preference for="FalconMedia\AdminPasskey\Model\TrustedDevice\TrustedDeviceManagerInterface"
+                type="FalconMedia\AdminPasskey\Model\TrustedDevice\TrustedDeviceManager"/>
+    <preference for="FalconMedia\AdminPasskey\Model\Lockout\LockoutManagerInterface"
+                type="FalconMedia\AdminPasskey\Model\Lockout\LockoutManager"/>
+    <preference for="FalconMedia\AdminPasskey\Model\Fail2Ban\Fail2BanLoggerInterface"
+                type="FalconMedia\AdminPasskey\Model\Fail2Ban\Fail2BanLogger"/>
+    <preference for="FalconMedia\AdminPasskey\Model\Recovery\RecoveryModeServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\Recovery\RecoveryModeService"/>
+
+    <!-- Internal WebAuthn challenge services (Admin UI only; not web-exposed). -->
+    <preference for="FalconMedia\AdminPasskey\Model\WebAuthn\RegistrationChallengeServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\WebAuthn\RegistrationChallengeService"/>
+    <preference for="FalconMedia\AdminPasskey\Model\WebAuthn\AssertionChallengeServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\WebAuthn\AssertionChallengeService"/>
+
+    <!-- Internal WebAuthn verification services (Admin UI only; not web-exposed). -->
+    <preference for="FalconMedia\AdminPasskey\Model\WebAuthn\RegistrationVerificationServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\WebAuthn\RegistrationVerificationService"/>
+    <preference for="FalconMedia\AdminPasskey\Model\WebAuthn\AssertionVerificationServiceInterface"
+                type="FalconMedia\AdminPasskey\Model\WebAuthn\AssertionVerificationService"/>
+
+    <!-- Admin login flow bindings (Admin UI only; not web-exposed). -->
+    <preference for="FalconMedia\AdminPasskey\Model\Auth\AdminSessionCreatorInterface"
+                type="FalconMedia\AdminPasskey\Model\Auth\AdminSessionCreator"/>
+    <preference for="FalconMedia\AdminPasskey\Model\Login\LoginAttemptRecorderInterface"
+                type="FalconMedia\AdminPasskey\Model\Login\LoginAttemptRecorder"/>
+    <preference for="FalconMedia\AdminPasskey\Model\Login\RateLimiterInterface"
+                type="FalconMedia\AdminPasskey\Model\Login\CacheRateLimiter"/>
+
+    <!--
+        Pre-auth login endpoint throttle window. These values guard the
+        unauthenticated assertion options/verify endpoints per remote IP; they are
+        intentionally more permissive than the per-user lockout policy
+        (adminpasskey/lockout/*) because they cover legitimate retries of a single
+        login page. There is no dedicated System Configuration path for this window
+        yet; Step 13 (Lockout/Recovery) introduces durable, per-user lockout on top
+        of the same RateLimiterInterface seam. Values are declared here (not left as
+        constructor magic numbers) so they remain visible and overridable.
+    -->
+    <type name="FalconMedia\AdminPasskey\Model\Login\CacheRateLimiter">
+        <arguments>
+            <argument name="maxAttempts" xsi:type="number">30</argument>
+            <argument name="windowSeconds" xsi:type="number">60</argument>
+        </arguments>
+    </type>
+
+    <!-- Admin UI-component grid data sources. -->
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="falconmedia_adminpasskey_audit_listing_data_source" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\AuditEvent\Grid\Collection</item>
+                <item name="falconmedia_adminpasskey_trusted_device_listing_data_source" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\TrustedDevice\Grid\Collection</item>
+                <item name="falconmedia_adminpasskey_lockout_listing_data_source" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\Lockout\Grid\Collection</item>
+                <item name="falconmedia_adminpasskey_diagnostics_listing_data_source" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\DiagnosticsReport\Grid\Collection</item>
+                <item name="falconmedia_adminpasskey_score_listing_data_source" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\SecurityScoreSnapshot\Grid\Collection</item>
+                <item name="falconmedia_adminpasskey_cleanup_listing_data_source" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\CleanupLog\Grid\Collection</item>
+                <item name="falconmedia_adminpasskey_reminder_listing_data_source" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\Reminder\Grid\Collection</item>
+                <item name="falconmedia_adminpasskey_migration_listing_data_source" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\AdminUserGrid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="FalconMedia\AdminPasskey\Model\ResourceModel\AdminUserGrid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">admin_user</argument>
+            <argument name="resourceModel" xsi:type="string">Magento\User\Model\ResourceModel\User</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="FalconMedia\AdminPasskey\Model\ResourceModel\AuditEvent\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">falconmedia_adminpasskey_audit</argument>
+            <argument name="resourceModel" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\AuditEvent</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="FalconMedia\AdminPasskey\Model\ResourceModel\TrustedDevice\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">falconmedia_adminpasskey_trusted_device</argument>
+            <argument name="resourceModel" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\TrustedDevice</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="FalconMedia\AdminPasskey\Model\ResourceModel\Lockout\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">falconmedia_adminpasskey_lockout</argument>
+            <argument name="resourceModel" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\Lockout</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="FalconMedia\AdminPasskey\Model\ResourceModel\DiagnosticsReport\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">falconmedia_adminpasskey_diagnostics_report</argument>
+            <argument name="resourceModel" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\DiagnosticsReport</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="FalconMedia\AdminPasskey\Model\ResourceModel\SecurityScoreSnapshot\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">falconmedia_adminpasskey_security_score_snapshot</argument>
+            <argument name="resourceModel" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\SecurityScoreSnapshot</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="FalconMedia\AdminPasskey\Model\ResourceModel\CleanupLog\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">falconmedia_adminpasskey_cleanup_log</argument>
+            <argument name="resourceModel" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\CleanupLog</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="FalconMedia\AdminPasskey\Model\ResourceModel\Reminder\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">falconmedia_adminpasskey_reminder</argument>
+            <argument name="resourceModel" xsi:type="string">FalconMedia\AdminPasskey\Model\ResourceModel\Reminder</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Operational CLI commands (Step 16). Each delegates to an existing service. -->
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="falconmedia_adminpasskey_health" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\HealthCommand</item>
+                <item name="falconmedia_adminpasskey_diagnostics_generate" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\DiagnosticsGenerateCommand</item>
+                <item name="falconmedia_adminpasskey_cleanup" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\CleanupCommand</item>
+                <item name="falconmedia_adminpasskey_lockouts_list" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\LockoutsListCommand</item>
+                <item name="falconmedia_adminpasskey_lockouts_unlock" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\LockoutsUnlockCommand</item>
+                <item name="falconmedia_adminpasskey_recovery_status" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\RecoveryStatusCommand</item>
+                <item name="falconmedia_adminpasskey_recovery_disable" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\RecoveryDisableCommand</item>
+                <item name="falconmedia_adminpasskey_score" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\ScoreCommand</item>
+                <item name="falconmedia_adminpasskey_audit_export" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\AuditExportCommand</item>
+                <item name="falconmedia_adminpasskey_migration_status" xsi:type="object">FalconMedia\AdminPasskey\Console\Command\MigrationStatusCommand</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

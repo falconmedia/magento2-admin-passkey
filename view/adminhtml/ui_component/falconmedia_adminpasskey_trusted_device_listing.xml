@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">falconmedia_adminpasskey_trusted_device_listing.falconmedia_adminpasskey_trusted_device_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>falconmedia_adminpasskey_trusted_device_columns</spinner>
+        <deps>
+            <dep>falconmedia_adminpasskey_trusted_device_listing.falconmedia_adminpasskey_trusted_device_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="falconmedia_adminpasskey_trusted_device_listing_data_source"
+                component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">entity_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>FalconMedia_AdminPasskey::trusted_devices</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider"
+                      name="falconmedia_adminpasskey_trusted_device_listing_data_source">
+            <settings>
+                <requestFieldName>entity_id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters">
+            <settings>
+                <templates>
+                    <filters>
+                        <select>
+                            <param name="template" xsi:type="string">ui/grid/filters/elements/ui-select</param>
+                            <param name="component" xsi:type="string">Magento_Ui/js/form/element/ui-select</param>
+                        </select>
+                    </filters>
+                </templates>
+            </settings>
+        </filters>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="falconmedia_adminpasskey_trusted_device_columns">
+        <column name="entity_id" sortOrder="10">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+        <column name="admin_user_id" sortOrder="20">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Admin User ID</label>
+            </settings>
+        </column>
+        <column name="label" sortOrder="30">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Device Label</label>
+            </settings>
+        </column>
+        <column name="status" component="Magento_Ui/js/grid/columns/select" sortOrder="40">
+            <settings>
+                <filter>select</filter>
+                <options class="FalconMedia\AdminPasskey\Model\Source\TrustedDeviceStatus"/>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+            </settings>
+        </column>
+        <column name="first_seen_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date" sortOrder="50">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">First Seen At</label>
+            </settings>
+        </column>
+        <column name="last_seen_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date" sortOrder="60">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Last Seen At</label>
+            </settings>
+        </column>
+        <column name="expires_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date" sortOrder="70">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Expires At</label>
+            </settings>
+        </column>
+        <column name="revoked_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date" sortOrder="80">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Revoked At</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="FalconMedia\AdminPasskey\Ui\Component\Listing\Column\TrustedDeviceActions" sortOrder="90">
+            <settings>
+                <indexField>entity_id</indexField>
+                <label translate="true">Actions</label>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

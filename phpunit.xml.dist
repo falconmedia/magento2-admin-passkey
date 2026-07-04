@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright (c) FalconMedia. All rights reserved.
+ * See LICENSE for license details.
+ *
+ * Module-scoped runner for the FalconMedia_AdminPasskey UNIT tests. It reuses
+ * the Magento unit-test framework bootstrap and only targets this module, so it
+ * does not duplicate the global dev/tests/unit runner.
+ *
+ * Integration tests use the global dev/tests/integration/phpunit.xml.dist
+ * runner (see README) because they require the integration install config.
+ */
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         colors="true"
+         columns="max"
+         beStrictAboutTestsThatDoNotTestAnything="false"
+         bootstrap="../../../../dev/tests/unit/framework/bootstrap.php">
+    <testsuites>
+        <testsuite name="FalconMedia_AdminPasskey_Unit">
+            <directory>Test/Unit</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <ini name="memory_limit" value="-1"/>
+        <ini name="date.timezone" value="UTC"/>
+    </php>
+</phpunit>

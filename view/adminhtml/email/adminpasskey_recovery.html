@@ -1,0 +1,19 @@
+<!--@subject {{trans "Emergency recovery mode was %state" state=$state}} @-->
+<!--@vars {
+"var admin_name":"Admin name",
+"var state":"Recovery state",
+"var reason":"Reason",
+"var company_name":"Company name",
+"var support_email":"Support email",
+"var accent_color":"Accent color",
+"var footer_text":"Footer text"
+} @-->
+<body>
+    <p style="color:{{var accent_color}};font-weight:bold;">{{var company_name}}</p>
+    <p>{{trans "Hello %name," name=$admin_name}}</p>
+    <p>{{trans "Emergency recovery mode was %state for the Admin Passkey suite." state=$state}}</p>
+    <p>{{trans "Reason:"}} {{var reason}}</p>
+    <p>{{trans "Every recovery action is audited. If you did not expect this change, contact support at %email immediately." email=$support_email}}</p>
+    <hr/>
+    <p style="color:#888;font-size:12px;">{{var footer_text}}</p>
+</body>
