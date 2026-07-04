@@ -6,19 +6,17 @@
 $copy = $block->getLoginDesignConfig();
 $accent = $escaper->escapeHtmlAttr($block->getAccentColor());
 
-$iconActivity = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" '
-    . 'stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>';
-$iconUsers = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
-    . 'stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"></path>'
-    . '<circle cx="10" cy="8" r="5"></circle><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"></path></svg>';
-$iconShieldAccent = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-    . 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 '
-    . '0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1 1 0 0 1 1.3 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1Z">'
-    . '</path></svg>';
-$iconBadgeCheck = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" '
-    . 'stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 '
-    . '1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>'
-    . '<path d="m9 12 2 2 4-4"></path></svg>';
+// Uploaded stage images (if any) override the bundled defaults via CSS vars.
+$stageVars = '';
+$stageLight = $block->getStageImageLightUrl();
+if ($stageLight !== '') {
+    $stageVars .= "--apk-stage-img-light:url('" . $escaper->escapeUrl($stageLight) . "');";
+}
+$stageDark = $block->getStageImageDarkUrl();
+if ($stageDark !== '') {
+    $stageVars .= "--apk-stage-img-dark:url('" . $escaper->escapeUrl($stageDark) . "');";
+}
+
 $iconFingerprint = '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
     . 'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
     . '<path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"></path>'
@@ -28,11 +26,9 @@ $iconFingerprint = '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" 
     . '<path d="M8.65 22c.21-.66.45-1.32.57-2"></path><path d="M9 6.8a6 6 0 0 1 9 5.2v2"></path></svg>';
 $iconChevron = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
     . 'stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>';
-
-$sparkBars = [70, 90, 60, 100, 80, 95, 75, 88, 66, 92];
 ?>
 <div class="adminpasskey-login-page adminpasskey-login-page--command"
-     style="--apk-accent: <?= $accent ?>;"
+     style="--apk-accent: <?= $accent ?>;<?= /* @noEscape */ $stageVars ?>"
      data-mage-init='<?= $escaper->escapeHtmlAttr($block->getMageInitJson()) ?>'>
     <?= /* @noEscape */ $block->getThemeToggleHtml() ?>
     <header class="adminpasskey-login-page__topbar">
@@ -42,10 +38,6 @@ $sparkBars = [70, 90, 60, 100, 80, 95, 75, 88, 66, 92];
                 <?= $escaper->escapeHtml($block->getEnvironmentLabel()) ?>
             </span>
         </div>
-        <span class="adminpasskey-login-page__system-status">
-            <span class="adminpasskey-dot" aria-hidden="true"></span>
-            <?= $escaper->escapeHtml(__('System nominal')) ?>
-        </span>
     </header>
 
     <div class="adminpasskey-login-page__command-body">
@@ -53,56 +45,15 @@ $sparkBars = [70, 90, 60, 100, 80, 95, 75, 88, 66, 92];
             <div class="adminpasskey-login-page__stage-inner">
                 <h1 class="adminpasskey-login-page__stage-title">
                     <?= $escaper->escapeHtml(
-                        $copy->getCommandStageHeadline() ?: __('eCommerce Management Dashboard')
+                        $copy->getPasskeyHeadline() ?: __('eCommerce Management Dashboard')
                     ) ?>
                 </h1>
                 <p class="adminpasskey-login-page__stage-text">
                     <?= $escaper->escapeHtml(
-                        $copy->getCommandStageDescription()
+                        $copy->getPasskeyDescription()
                             ?: __('Sign in to operate your Magento 2 estate. Live platform health shown below.')
                     ) ?>
                 </p>
-                <div class="adminpasskey-login-page__metrics" aria-hidden="true">
-                    <div class="adminpasskey-login-page__metric">
-                        <div class="adminpasskey-login-page__metric-head">
-                            <?= /* @noEscape */ $iconActivity ?><?= $escaper->escapeHtml(__('Uptime · 30d')) ?>
-                        </div>
-                        <strong>99.99<span>%</span></strong>
-                        <div class="adminpasskey-login-page__spark">
-                            <?php foreach ($sparkBars as $i => $h): ?>
-                                <span class="<?= $i === 6 ? 'is-accent' : '' ?>" style="height: <?= (int) $h ?>%"></span>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <div class="adminpasskey-login-page__metric">
-                        <div class="adminpasskey-login-page__metric-head">
-                            <?= /* @noEscape */ $iconUsers ?><?= $escaper->escapeHtml(__('Active sessions')) ?>
-                        </div>
-                        <strong>128</strong>
-                        <div class="adminpasskey-login-page__metric-sub">
-                            <?= $escaper->escapeHtml(__('across 6 stores')) ?>
-                        </div>
-                    </div>
-                    <div class="adminpasskey-login-page__metric">
-                        <div class="adminpasskey-login-page__metric-head">
-                            <?= /* @noEscape */ $iconShieldAccent ?><?= $escaper->escapeHtml(__('Threats blocked · 24h')) ?>
-                        </div>
-                        <strong>2,417</strong>
-                        <div class="adminpasskey-login-page__metric-sub">
-                            <?= $escaper->escapeHtml(__('WAF + rate limiting')) ?>
-                        </div>
-                    </div>
-                    <div class="adminpasskey-login-page__metric">
-                        <div class="adminpasskey-login-page__metric-head">
-                            <?= /* @noEscape */ $iconBadgeCheck ?><?= $escaper->escapeHtml(__('Compliance')) ?>
-                        </div>
-                        <div class="adminpasskey-login-page__compliance">
-                            <span>SOC 2 Type II</span>
-                            <span>PCI-DSS Level 1</span>
-                            <span>ISO 27001</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -112,7 +63,7 @@ $sparkBars = [70, 90, 60, 100, 80, 95, 75, 88, 66, 92];
                     <?= $escaper->escapeHtml($copy->getCommandAuthLabel() ?: __('Authentication Required')) ?>
                 </p>
                 <h2 class="adminpasskey-login-page__auth-title">
-                    <?= $escaper->escapeHtml($copy->getCommandSignInTitle() ?: __('Sign in')) ?>
+                    <?= $escaper->escapeHtml($copy->getSignInTitle() ?: __('Sign in')) ?>
                 </h2>
 
                 <?php if ($block->isPasskeyLoginEnabled()): ?>
@@ -124,7 +75,7 @@ $sparkBars = [70, 90, 60, 100, 80, 95, 75, 88, 66, 92];
                         <span class="adminpasskey-login-page__passkey-card-copy">
                             <strong><?= $escaper->escapeHtml(__('Sign in with a passkey')) ?></strong>
                             <small><?= $escaper->escapeHtml(
-                                $copy->getCommandPasskeySubtitle() ?: __('Passwordless · no username')
+                                $copy->getPasskeySubtitle() ?: __('Passwordless · no username')
                             ) ?></small>
                         </span>
                         <span class="adminpasskey-login-page__passkey-card-chevron" aria-hidden="true">

@@ -62,6 +62,44 @@ class Page extends Template
     }
 
     /**
+     * Public URL of the uploaded light-mode Image Deck stage image, or '' when
+     * none is configured (the bundled default is used in that case).
+     */
+    public function getStageImageLightUrl(): string
+    {
+        return $this->stageImageUrl('login_stage_light', $this->configProvider->getLoginCommandStageImageLight());
+    }
+
+    /**
+     * Public URL of the uploaded dark-mode Image Deck stage image, or '' when none.
+     */
+    public function getStageImageDarkUrl(): string
+    {
+        return $this->stageImageUrl('login_stage_dark', $this->configProvider->getLoginCommandStageImageDark());
+    }
+
+    /**
+     * Build the media URL for a stored stage image filename, or '' when empty.
+     */
+    private function stageImageUrl(string $subDir, string $file): string
+    {
+        if ($file === '') {
+            return '';
+        }
+
+        try {
+            $base = rtrim(
+                $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA),
+                '/'
+            );
+        } catch (\Throwable) {
+            return '';
+        }
+
+        return $base . '/adminpasskey/' . $subDir . '/' . ltrim($file, '/');
+    }
+
+    /**
      * Logo markup for a layout. A configured white-label logo renders as an
      * <img>; otherwise the native Magento wordmark is inlined so its letters and
      * trademark follow the active colour theme (white on dark, dark on light)

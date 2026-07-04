@@ -21,6 +21,11 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Master switch for the Admin Passkey suite. When disabled, no passkey behaviour is active.</comment>
                 </field>
+                <field id="login_language" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Login Page Language</label>
+                    <source_model>FalconMedia\AdminPasskey\Model\Config\Source\LoginLanguage</source_model>
+                    <comment>Language of the Admin login page (before sign-in). "Auto-detect (browser)" matches the visitor's browser language against the deployed backend locales, falling back to English (en_US) when available. Or force a specific deployed locale. Signed-in admins always keep their own Interface Locale.</comment>
+                </field>
             </group>
 
             <group id="authentication_policy" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
@@ -45,92 +50,76 @@
 
             <group id="login_design" translate="label comment" type="text" sortOrder="22" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Login Page Design</label>
-                <comment>Choose the Admin login page layout. Copy fields for the selected layout appear in the subsections below.</comment>
+                <comment>Choose the Admin login layout. The copy fields here apply to every layout; layout-specific copy is in the subsections below.</comment>
                 <field id="layout" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Layout</label>
                     <source_model>FalconMedia\AdminPasskey\Model\Config\Source\LoginDesignLayout</source_model>
-                    <comment>Spotlight is the default passkey-first card. Split Console and Command Deck show a branded side panel.</comment>
+                    <comment>Spotlight is the default passkey-first card. Split Console and Image Deck show a branded side panel.</comment>
                 </field>
-            </group>
-
-            <group id="login_design_spotlight" translate="label comment" type="text" sortOrder="23" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>Spotlight Layout Content</label>
-                <comment>Text and trust badges for the centered Spotlight login card.</comment>
-                <depends>
-                    <field id="login_design/layout">spotlight</field>
-                </depends>
-                <field id="environment_badge" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="environment_badge" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Environment Badge</label>
+                    <comment>Overrides the automatic label. Leave empty to show the live deploy mode (Production / Developer).</comment>
                 </field>
-                <field id="passkey_headline" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Passkey Headline</label>
+                <field id="passkey_headline" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Headline</label>
+                    <comment>Main heading — the Spotlight card title, the Split Console accent word, and the Image Deck stage title. Leave empty to use each layout's default.</comment>
                 </field>
-                <field id="passkey_description" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Passkey Description</label>
+                <field id="passkey_description" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Description</label>
+                    <comment>Sub-heading — the Spotlight subtitle, the Split Console brand description, and the Image Deck stage description. Leave empty to use each layout's default.</comment>
                 </field>
-                <field id="passkey_button_label" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="passkey_button_label" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Passkey Button Label</label>
                 </field>
-                <field id="password_two_fa_notice" translate="label comment" type="textarea" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="sign_in_title" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Sign In Title</label>
+                </field>
+                <field id="sign_in_subtitle" translate="label" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Sign In Subtitle</label>
+                </field>
+                <field id="passkey_subtitle" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Passkey Button Subtitle</label>
+                </field>
+                <field id="password_two_fa_notice" translate="label comment" type="textarea" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Password 2FA Notice</label>
-                    <comment>Shown on the password tab only.</comment>
+                    <comment>Shown on the password tab / below the password field when signing in with credentials.</comment>
                 </field>
             </group>
 
             <group id="login_design_split_console" translate="label comment" type="text" sortOrder="24" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Split Console Layout Content</label>
-                <comment>Brand rail and sign-in copy for the Split Console layout.</comment>
+                <comment>Brand rail copy shown only for the Split Console layout.</comment>
                 <depends>
                     <field id="login_design/layout">split_console</field>
                 </depends>
-                <field id="brand_headline" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="brand_headline" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Brand Headline</label>
-                </field>
-                <field id="brand_highlight" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Brand Headline Highlight</label>
-                </field>
-                <field id="brand_description" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Brand Description</label>
-                </field>
-                <field id="sign_in_title" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Sign In Title</label>
-                </field>
-                <field id="sign_in_subtitle" translate="label" type="textarea" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Sign In Subtitle</label>
-                </field>
-                <field id="passkey_subtitle" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Passkey Button Subtitle</label>
-                </field>
-                <field id="password_two_fa_notice" translate="label comment" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Password 2FA Notice</label>
-                    <comment>Shown below the password field when using credentials.</comment>
+                    <comment>Plain prefix word before the accent Headline (e.g. "eCommerce" in "eCommerce Dashboard").</comment>
                 </field>
             </group>
 
             <group id="login_design_command_deck" translate="label comment" type="text" sortOrder="25" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>Command Deck Layout Content</label>
-                <comment>Stage panel and authentication module copy for the Command Deck layout.</comment>
+                <label>Image Deck Layout Content</label>
+                <comment>Stage panel copy and background art shown only for the Image Deck layout.</comment>
                 <depends>
                     <field id="login_design/layout">command_deck</field>
                 </depends>
-                <field id="stage_headline" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Stage Headline</label>
+                <field id="stage_image_light" translate="label comment" type="image" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Stage Image (Light Mode)</label>
+                    <backend_model>FalconMedia\AdminPasskey\Model\Config\Backend\BrandingImage</backend_model>
+                    <upload_dir config="system/filesystem/media">adminpasskey/login_stage_light</upload_dir>
+                    <base_url type="media">adminpasskey/login_stage_light</base_url>
+                    <comment>Left-panel background shown in light mode. Leave empty to use the bundled default. Accepted: PNG, JPG, WebP, SVG.</comment>
                 </field>
-                <field id="stage_description" translate="label" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Stage Description</label>
+                <field id="stage_image_dark" translate="label comment" type="image" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Stage Image (Dark Mode)</label>
+                    <backend_model>FalconMedia\AdminPasskey\Model\Config\Backend\BrandingImage</backend_model>
+                    <upload_dir config="system/filesystem/media">adminpasskey/login_stage_dark</upload_dir>
+                    <base_url type="media">adminpasskey/login_stage_dark</base_url>
+                    <comment>Left-panel background shown in dark mode. Leave empty to use the bundled default. Accepted: PNG, JPG, WebP, SVG.</comment>
                 </field>
                 <field id="auth_label" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Authentication Label</label>
-                </field>
-                <field id="sign_in_title" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Sign In Title</label>
-                </field>
-                <field id="passkey_subtitle" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Passkey Button Subtitle</label>
-                </field>
-                <field id="password_two_fa_notice" translate="label comment" type="textarea" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Password 2FA Notice</label>
-                    <comment>Shown below the password field when using credentials.</comment>
                 </field>
                 <field id="footer_text" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Footer Text</label>

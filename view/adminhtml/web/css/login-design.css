@@ -894,6 +894,26 @@ body.adminpasskey-login input:focus-visible {
     min-height: 0;
 }
 
+/* Image Deck stage background art — swaps per theme. The --apk-stage-img-*
+   vars default to the bundled art; the template overrides them inline with an
+   uploaded media image when one is configured. */
+body.adminpasskey-login {
+    --apk-stage-img-dark: url("../images/passkey-stage-dark.png");
+    --apk-stage-img-light: url("../images/passkey-stage-light.png");
+    --apk-stage-img: var(--apk-stage-img-dark);
+}
+
+body.adminpasskey-login[data-apk-theme="light"] {
+    --apk-stage-img: var(--apk-stage-img-light);
+}
+
+@media (prefers-color-scheme: light) {
+    body.adminpasskey-login[data-apk-theme="system"],
+    body.adminpasskey-login:not([data-apk-theme]) {
+        --apk-stage-img: var(--apk-stage-img-light);
+    }
+}
+
 .adminpasskey-login-page__stage {
     position: relative;
     flex: 1;
@@ -903,17 +923,17 @@ body.adminpasskey-login input:focus-visible {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    background-image: var(--apk-stage-img);
+    background-size: cover;
+    background-position: center;
 }
 
+/* Readability scrim over the background art. */
 .adminpasskey-login-page__stage::before {
     content: "";
     position: absolute;
     inset: 0;
-    background-image:
-        linear-gradient(var(--apk-grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--apk-grid) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: var(--apk-grid-opacity);
+    background: color-mix(in srgb, var(--apk-bg) 30%, transparent);
 }
 
 .adminpasskey-login-page__stage-inner {
@@ -1053,6 +1073,8 @@ body.adminpasskey-login input:focus-visible {
 }
 
 /* ---- Responsive ---------------------------------------------------------- */
+
+/* Tablet / small laptop: Split + Command stack into a single column. */
 @media (max-width: 960px) {
     .adminpasskey-login-page--split,
     .adminpasskey-login-page__command-body {
@@ -1060,11 +1082,115 @@ body.adminpasskey-login input:focus-visible {
     }
 
     .adminpasskey-login-page__rail,
-    .adminpasskey-login-page__auth-module {
+    .adminpasskey-login-page__auth-module,
+    .adminpasskey-login-page__stage {
         width: 100%;
+        flex: none;
+    }
+
+    .adminpasskey-login-page__rail-inner {
+        padding: 40px 32px;
+        gap: 28px;
+    }
+
+    .adminpasskey-login-page__rail-title {
+        font-size: 28px;
     }
 
     .adminpasskey-login-page__stage {
-        min-height: 320px;
+        min-height: 300px;
+        padding: 32px;
+    }
+
+    /* Border moves from the side to the top once stacked. */
+    .adminpasskey-login-page__auth-module {
+        border-left: none;
+        border-top: 1px solid var(--apk-border-soft);
+        padding: 36px 32px;
+    }
+
+    .adminpasskey-login-page__auth-inner,
+    .adminpasskey-login-page__main-inner {
+        width: 100%;
+        max-width: 420px;
+    }
+
+    .adminpasskey-login-page--command .adminpasskey-login-page__topbar {
+        padding-right: 120px;
+    }
+}
+
+/* Phone: tighten padding, scale headings, allow the Spotlight card to scroll. */
+@media (max-width: 640px) {
+    .adminpasskey-login-page--spotlight {
+        padding: 20px 16px;
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    .adminpasskey-login-page__env {
+        top: 14px;
+        left: 16px;
+    }
+
+    .adminpasskey-login-page__card {
+        padding: 26px 22px 24px;
+    }
+
+    .adminpasskey-login-page__rail-inner {
+        padding: 32px 22px;
+    }
+
+    .adminpasskey-login-page__rail-title {
+        font-size: 24px;
+    }
+
+    .adminpasskey-login-page__stage,
+    .adminpasskey-login-page__auth-module {
+        padding: 28px 22px;
+    }
+
+    .adminpasskey-login-page__stage-title {
+        font-size: 24px;
+    }
+
+    .adminpasskey-login-page__main {
+        padding: 24px 18px;
+    }
+
+    .adminpasskey-theme {
+        top: 12px;
+        right: 12px;
+    }
+}
+
+/* Very small phones. */
+@media (max-width: 380px) {
+    .adminpasskey-login-page--spotlight {
+        padding: 16px 12px;
+    }
+
+    .adminpasskey-login-page__card {
+        padding: 22px 16px 20px;
+    }
+
+    .adminpasskey-login-page__tab {
+        font-size: 11px;
+        gap: 4px;
+        padding: 9px 6px;
+    }
+
+    .adminpasskey-login-page__brand .adminpasskey-login-page__logo {
+        width: 112px;
+    }
+}
+
+/* Short viewports (landscape phones): don't vertically trap the card. */
+@media (max-height: 640px) {
+    .adminpasskey-login-page--spotlight {
+        align-items: flex-start;
+        overflow-y: auto;
+        padding-top: 24px;
+        padding-bottom: 24px;
     }
 }

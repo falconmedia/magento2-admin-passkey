@@ -13,6 +13,11 @@ use FalconMedia\AdminPasskey\Model\Config\Source\LoginDesignLayout;
 /**
  * Typed accessors for the active login-page design copy.
  *
+ * Shared copy (headline, sign-in title/subtitle, passkey subtitle, button label,
+ * 2FA notice, environment badge) lives on the parent login_design group and is
+ * used by every layout. Only brand rail (Split Console) and stage/footer
+ * (Command Deck) copy is layout-specific.
+ *
  * @internal Admin-only support; not part of a public web API contract.
  */
 class LoginDesignConfig
@@ -42,92 +47,60 @@ class LoginDesignConfig
         return $this->getLayout() === LoginDesignLayout::COMMAND_DECK;
     }
 
+    // --- Shared copy (all layouts) ------------------------------------------
+
     public function getEnvironmentBadge(): string
     {
-        return $this->configProvider->getLoginSpotlightEnvironmentBadge();
+        return $this->configProvider->getLoginEnvironmentBadge();
     }
 
     public function getPasskeyHeadline(): string
     {
-        return $this->configProvider->getLoginSpotlightPasskeyHeadline();
+        return $this->configProvider->getLoginPasskeyHeadline();
     }
 
     public function getPasskeyDescription(): string
     {
-        return $this->configProvider->getLoginSpotlightPasskeyDescription();
+        return $this->configProvider->getLoginPasskeyDescription();
     }
 
     public function getPasskeyButtonLabel(): string
     {
-        if ($this->isSpotlight()) {
-            return $this->configProvider->getLoginSpotlightPasskeyButtonLabel();
-        }
+        return $this->configProvider->getLoginPasskeyButtonLabel();
+    }
 
-        return (string) __('Sign in with a passkey');
+    public function getSignInTitle(): string
+    {
+        return $this->configProvider->getLoginSignInTitle();
+    }
+
+    public function getSignInSubtitle(): string
+    {
+        return $this->configProvider->getLoginSignInSubtitle();
+    }
+
+    public function getPasskeySubtitle(): string
+    {
+        return $this->configProvider->getLoginPasskeySubtitle();
     }
 
     public function getPasswordTwoFaNotice(): string
     {
-        return match ($this->getLayout()) {
-            LoginDesignLayout::SPLIT_CONSOLE => $this->configProvider->getLoginSplitPasswordTwoFaNotice(),
-            LoginDesignLayout::COMMAND_DECK => $this->configProvider->getLoginCommandPasswordTwoFaNotice(),
-            default => $this->configProvider->getLoginSpotlightPasswordTwoFaNotice(),
-        };
+        return $this->configProvider->getLoginPasswordTwoFaNotice();
     }
+
+    // --- Split Console specific ---------------------------------------------
 
     public function getSplitBrandHeadline(): string
     {
         return $this->configProvider->getLoginSplitBrandHeadline();
     }
 
-    public function getSplitBrandHighlight(): string
-    {
-        return $this->configProvider->getLoginSplitBrandHighlight();
-    }
-
-    public function getSplitBrandDescription(): string
-    {
-        return $this->configProvider->getLoginSplitBrandDescription();
-    }
-
-    public function getSplitSignInTitle(): string
-    {
-        return $this->configProvider->getLoginSplitSignInTitle();
-    }
-
-    public function getSplitSignInSubtitle(): string
-    {
-        return $this->configProvider->getLoginSplitSignInSubtitle();
-    }
-
-    public function getSplitPasskeySubtitle(): string
-    {
-        return $this->configProvider->getLoginSplitPasskeySubtitle();
-    }
-
-    public function getCommandStageHeadline(): string
-    {
-        return $this->configProvider->getLoginCommandStageHeadline();
-    }
-
-    public function getCommandStageDescription(): string
-    {
-        return $this->configProvider->getLoginCommandStageDescription();
-    }
+    // --- Command Deck specific ----------------------------------------------
 
     public function getCommandAuthLabel(): string
     {
         return $this->configProvider->getLoginCommandAuthLabel();
-    }
-
-    public function getCommandSignInTitle(): string
-    {
-        return $this->configProvider->getLoginCommandSignInTitle();
-    }
-
-    public function getCommandPasskeySubtitle(): string
-    {
-        return $this->configProvider->getLoginCommandPasskeySubtitle();
     }
 
     public function getCommandFooterText(): string

@@ -22,6 +22,7 @@ class ConfigProvider
 
     // General.
     private const PATH_GENERAL_ENABLED = self::XML_PATH_PREFIX . 'general/enabled';
+    private const PATH_GENERAL_LOGIN_LANGUAGE = self::XML_PATH_PREFIX . 'general/login_language';
 
     // Authentication Policy.
     private const PATH_AUTH_PASSKEY_FIRST = self::XML_PATH_PREFIX . 'authentication_policy/passkey_first_login';
@@ -30,25 +31,22 @@ class ConfigProvider
 
     // Login page design.
     private const PATH_LOGIN_DESIGN_LAYOUT = self::XML_PATH_PREFIX . 'login_design/layout';
-    private const PATH_LOGIN_SPOTLIGHT_ENVIRONMENT = self::XML_PATH_PREFIX . 'login_design_spotlight/environment_badge';
-    private const PATH_LOGIN_SPOTLIGHT_PASSKEY_HEADLINE = self::XML_PATH_PREFIX . 'login_design_spotlight/passkey_headline';
-    private const PATH_LOGIN_SPOTLIGHT_PASSKEY_DESCRIPTION = self::XML_PATH_PREFIX . 'login_design_spotlight/passkey_description';
-    private const PATH_LOGIN_SPOTLIGHT_PASSKEY_BUTTON = self::XML_PATH_PREFIX . 'login_design_spotlight/passkey_button_label';
-    private const PATH_LOGIN_SPOTLIGHT_PASSWORD_TWO_FA = self::XML_PATH_PREFIX . 'login_design_spotlight/password_two_fa_notice';
+    // Shared login copy (applies to every layout).
+    private const PATH_LOGIN_ENVIRONMENT = self::XML_PATH_PREFIX . 'login_design/environment_badge';
+    private const PATH_LOGIN_PASSKEY_HEADLINE = self::XML_PATH_PREFIX . 'login_design/passkey_headline';
+    private const PATH_LOGIN_PASSKEY_DESCRIPTION = self::XML_PATH_PREFIX . 'login_design/passkey_description';
+    private const PATH_LOGIN_PASSKEY_BUTTON = self::XML_PATH_PREFIX . 'login_design/passkey_button_label';
+    private const PATH_LOGIN_SIGN_IN_TITLE = self::XML_PATH_PREFIX . 'login_design/sign_in_title';
+    private const PATH_LOGIN_SIGN_IN_SUBTITLE = self::XML_PATH_PREFIX . 'login_design/sign_in_subtitle';
+    private const PATH_LOGIN_PASSKEY_SUBTITLE = self::XML_PATH_PREFIX . 'login_design/passkey_subtitle';
+    private const PATH_LOGIN_PASSWORD_TWO_FA = self::XML_PATH_PREFIX . 'login_design/password_two_fa_notice';
+    // Split Console specific.
     private const PATH_LOGIN_SPLIT_BRAND_HEADLINE = self::XML_PATH_PREFIX . 'login_design_split_console/brand_headline';
-    private const PATH_LOGIN_SPLIT_BRAND_HIGHLIGHT = self::XML_PATH_PREFIX . 'login_design_split_console/brand_highlight';
-    private const PATH_LOGIN_SPLIT_BRAND_DESCRIPTION = self::XML_PATH_PREFIX . 'login_design_split_console/brand_description';
-    private const PATH_LOGIN_SPLIT_SIGN_IN_TITLE = self::XML_PATH_PREFIX . 'login_design_split_console/sign_in_title';
-    private const PATH_LOGIN_SPLIT_SIGN_IN_SUBTITLE = self::XML_PATH_PREFIX . 'login_design_split_console/sign_in_subtitle';
-    private const PATH_LOGIN_SPLIT_PASSKEY_SUBTITLE = self::XML_PATH_PREFIX . 'login_design_split_console/passkey_subtitle';
-    private const PATH_LOGIN_SPLIT_PASSWORD_TWO_FA = self::XML_PATH_PREFIX . 'login_design_split_console/password_two_fa_notice';
-    private const PATH_LOGIN_COMMAND_STAGE_HEADLINE = self::XML_PATH_PREFIX . 'login_design_command_deck/stage_headline';
-    private const PATH_LOGIN_COMMAND_STAGE_DESCRIPTION = self::XML_PATH_PREFIX . 'login_design_command_deck/stage_description';
+    // Command Deck / Image Deck specific.
     private const PATH_LOGIN_COMMAND_AUTH_LABEL = self::XML_PATH_PREFIX . 'login_design_command_deck/auth_label';
-    private const PATH_LOGIN_COMMAND_SIGN_IN_TITLE = self::XML_PATH_PREFIX . 'login_design_command_deck/sign_in_title';
-    private const PATH_LOGIN_COMMAND_PASSKEY_SUBTITLE = self::XML_PATH_PREFIX . 'login_design_command_deck/passkey_subtitle';
-    private const PATH_LOGIN_COMMAND_PASSWORD_TWO_FA = self::XML_PATH_PREFIX . 'login_design_command_deck/password_two_fa_notice';
     private const PATH_LOGIN_COMMAND_FOOTER = self::XML_PATH_PREFIX . 'login_design_command_deck/footer_text';
+    private const PATH_LOGIN_COMMAND_IMAGE_LIGHT = self::XML_PATH_PREFIX . 'login_design_command_deck/stage_image_light';
+    private const PATH_LOGIN_COMMAND_IMAGE_DARK = self::XML_PATH_PREFIX . 'login_design_command_deck/stage_image_dark';
 
     // WebAuthn.
     private const PATH_WEBAUTHN_RP_NAME = self::XML_PATH_PREFIX . 'webauthn/relying_party_name';
@@ -182,6 +180,15 @@ class ConfigProvider
     public function isEnabled(?int $storeId = null): bool
     {
         return $this->flag(self::PATH_GENERAL_ENABLED, $storeId);
+    }
+
+    /**
+     * Login-page language strategy: 'auto' (browser detection) or a specific
+     * deployed backend locale to force.
+     */
+    public function getLoginLanguage(?int $storeId = null): string
+    {
+        return $this->string(self::PATH_GENERAL_LOGIN_LANGUAGE, $storeId);
     }
 
     // endregion
@@ -675,29 +682,44 @@ class ConfigProvider
         return $value !== '' ? $value : \FalconMedia\AdminPasskey\Model\Config\Source\LoginDesignLayout::SPOTLIGHT;
     }
 
-    public function getLoginSpotlightEnvironmentBadge(?int $storeId = null): string
+    public function getLoginEnvironmentBadge(?int $storeId = null): string
     {
-        return $this->string(self::PATH_LOGIN_SPOTLIGHT_ENVIRONMENT, $storeId);
+        return $this->string(self::PATH_LOGIN_ENVIRONMENT, $storeId);
     }
 
-    public function getLoginSpotlightPasskeyHeadline(?int $storeId = null): string
+    public function getLoginPasskeyHeadline(?int $storeId = null): string
     {
-        return $this->string(self::PATH_LOGIN_SPOTLIGHT_PASSKEY_HEADLINE, $storeId);
+        return $this->string(self::PATH_LOGIN_PASSKEY_HEADLINE, $storeId);
     }
 
-    public function getLoginSpotlightPasskeyDescription(?int $storeId = null): string
+    public function getLoginPasskeyDescription(?int $storeId = null): string
     {
-        return $this->string(self::PATH_LOGIN_SPOTLIGHT_PASSKEY_DESCRIPTION, $storeId);
+        return $this->string(self::PATH_LOGIN_PASSKEY_DESCRIPTION, $storeId);
     }
 
-    public function getLoginSpotlightPasskeyButtonLabel(?int $storeId = null): string
+    public function getLoginPasskeyButtonLabel(?int $storeId = null): string
     {
-        return $this->string(self::PATH_LOGIN_SPOTLIGHT_PASSKEY_BUTTON, $storeId);
+        return $this->string(self::PATH_LOGIN_PASSKEY_BUTTON, $storeId);
     }
 
-    public function getLoginSpotlightPasswordTwoFaNotice(?int $storeId = null): string
+    public function getLoginSignInTitle(?int $storeId = null): string
     {
-        return $this->string(self::PATH_LOGIN_SPOTLIGHT_PASSWORD_TWO_FA, $storeId);
+        return $this->string(self::PATH_LOGIN_SIGN_IN_TITLE, $storeId);
+    }
+
+    public function getLoginSignInSubtitle(?int $storeId = null): string
+    {
+        return $this->string(self::PATH_LOGIN_SIGN_IN_SUBTITLE, $storeId);
+    }
+
+    public function getLoginPasskeySubtitle(?int $storeId = null): string
+    {
+        return $this->string(self::PATH_LOGIN_PASSKEY_SUBTITLE, $storeId);
+    }
+
+    public function getLoginPasswordTwoFaNotice(?int $storeId = null): string
+    {
+        return $this->string(self::PATH_LOGIN_PASSWORD_TWO_FA, $storeId);
     }
 
     public function getLoginSplitBrandHeadline(?int $storeId = null): string
@@ -705,69 +727,30 @@ class ConfigProvider
         return $this->string(self::PATH_LOGIN_SPLIT_BRAND_HEADLINE, $storeId);
     }
 
-    public function getLoginSplitBrandHighlight(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_SPLIT_BRAND_HIGHLIGHT, $storeId);
-    }
-
-    public function getLoginSplitBrandDescription(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_SPLIT_BRAND_DESCRIPTION, $storeId);
-    }
-
-    public function getLoginSplitSignInTitle(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_SPLIT_SIGN_IN_TITLE, $storeId);
-    }
-
-    public function getLoginSplitSignInSubtitle(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_SPLIT_SIGN_IN_SUBTITLE, $storeId);
-    }
-
-    public function getLoginSplitPasskeySubtitle(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_SPLIT_PASSKEY_SUBTITLE, $storeId);
-    }
-
-    public function getLoginSplitPasswordTwoFaNotice(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_SPLIT_PASSWORD_TWO_FA, $storeId);
-    }
-
-    public function getLoginCommandStageHeadline(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_COMMAND_STAGE_HEADLINE, $storeId);
-    }
-
-    public function getLoginCommandStageDescription(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_COMMAND_STAGE_DESCRIPTION, $storeId);
-    }
-
     public function getLoginCommandAuthLabel(?int $storeId = null): string
     {
         return $this->string(self::PATH_LOGIN_COMMAND_AUTH_LABEL, $storeId);
     }
 
-    public function getLoginCommandSignInTitle(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_COMMAND_SIGN_IN_TITLE, $storeId);
-    }
-
-    public function getLoginCommandPasskeySubtitle(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_COMMAND_PASSKEY_SUBTITLE, $storeId);
-    }
-
-    public function getLoginCommandPasswordTwoFaNotice(?int $storeId = null): string
-    {
-        return $this->string(self::PATH_LOGIN_COMMAND_PASSWORD_TWO_FA, $storeId);
-    }
-
     public function getLoginCommandFooterText(?int $storeId = null): string
     {
         return $this->string(self::PATH_LOGIN_COMMAND_FOOTER, $storeId);
+    }
+
+    /**
+     * Stored filename of the uploaded light-mode stage image, or '' when none.
+     */
+    public function getLoginCommandStageImageLight(?int $storeId = null): string
+    {
+        return $this->string(self::PATH_LOGIN_COMMAND_IMAGE_LIGHT, $storeId);
+    }
+
+    /**
+     * Stored filename of the uploaded dark-mode stage image, or '' when none.
+     */
+    public function getLoginCommandStageImageDark(?int $storeId = null): string
+    {
+        return $this->string(self::PATH_LOGIN_COMMAND_IMAGE_DARK, $storeId);
     }
 
     // endregion

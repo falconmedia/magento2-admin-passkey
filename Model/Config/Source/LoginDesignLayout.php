@@ -28,7 +28,7 @@ class LoginDesignLayout implements OptionSourceInterface
         return [
             ['value' => self::SPOTLIGHT, 'label' => __('Spotlight')],
             ['value' => self::SPLIT_CONSOLE, 'label' => __('Split Console')],
-            ['value' => self::COMMAND_DECK, 'label' => __('Command Deck')],
+            ['value' => self::COMMAND_DECK, 'label' => __('Image Deck')],
         ];
     }
 }

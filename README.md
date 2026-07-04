@@ -1,6 +1,6 @@
 # FalconMedia_AdminPasskey
 
-Magento 2 **Admin security suite** module. It adds passkey (WebAuthn)
+Enterprise-grade Magento 2 **Admin security suite**. It adds passkey (WebAuthn)
 login for the Magento Admin, with username/password and `Magento_TwoFactorAuth`
 fallback preserved, plus operational tooling: trusted devices, lockouts,
 emergency recovery, migration and health dashboards, diagnostics, a security
@@ -53,7 +53,6 @@ paths directly in feature code.
 ## Installation
 
 ```bash
-composer require falconmedia/magento2-admin-passkey
 bin/magento module:enable FalconMedia_AdminPasskey
 bin/magento setup:upgrade
 bin/magento cache:flush
@@ -112,4 +111,4 @@ php vendor/bin/phpcbf --standard=app/code/FalconMedia/AdminPasskey/phpcs.xml.dis
 
 ## License
 
-MIT. Copyright (c) Falcon Media. See [LICENSE](LICENSE).
+MIT. Copyright (c) FalconMedia. See [LICENSE](LICENSE).

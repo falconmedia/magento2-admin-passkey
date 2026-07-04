@@ -10,10 +10,6 @@ $iconShield = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" strok
     . 'stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 '
     . '4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1 1 0 0 1 1.3 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1Z"></path>'
     . '<path d="m9 12 2 2 4-4"></path></svg>';
-$iconBadgeCheck = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-    . 'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 '
-    . '0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 '
-    . '1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg>';
 $iconFingerprint = '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
     . 'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
     . '<path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"></path>'
@@ -38,30 +34,15 @@ $iconChevron = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stro
                 </span>
                 <h1 class="adminpasskey-login-page__rail-title">
                     <?= $escaper->escapeHtml($copy->getSplitBrandHeadline() ?: __('eCommerce')) ?>
-                    <span><?= $escaper->escapeHtml($copy->getSplitBrandHighlight() ?: __('Dashboard')) ?></span>
+                    <span><?= $escaper->escapeHtml($copy->getPasskeyHeadline() ?: __('Dashboard')) ?></span>
                 </h1>
                 <p class="adminpasskey-login-page__rail-text">
                     <?= $escaper->escapeHtml(
-                        $copy->getSplitBrandDescription()
+                        $copy->getPasskeyDescription()
                             ?: __('Centralised control for your Magento 2 store — sales, catalog, customers and'
                                 . ' configuration from one hardened interface.')
                     ) ?>
                 </p>
-            </div>
-            <div class="adminpasskey-login-page__status-card" aria-hidden="true">
-                <div class="adminpasskey-login-page__status-row">
-                    <span class="adminpasskey-login-page__status-label">
-                        <span class="adminpasskey-dot"></span>
-                        <?= $escaper->escapeHtml(__('All systems operational')) ?>
-                    </span>
-                    <span class="adminpasskey-login-page__status-value">99.99%</span>
-                </div>
-                <div class="adminpasskey-login-page__status-rule"></div>
-                <div class="adminpasskey-login-page__pills">
-                    <span class="adminpasskey-login-page__pill"><?= /* @noEscape */ $iconBadgeCheck ?>SOC 2</span>
-                    <span class="adminpasskey-login-page__pill"><?= /* @noEscape */ $iconBadgeCheck ?>PCI-DSS</span>
-                    <span class="adminpasskey-login-page__pill"><?= /* @noEscape */ $iconBadgeCheck ?>ISO 27001</span>
-                </div>
             </div>
         </div>
     </aside>
@@ -69,11 +50,11 @@ $iconChevron = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stro
     <section class="adminpasskey-login-page__main">
         <div class="adminpasskey-login-page__main-inner">
             <h2 class="adminpasskey-login-page__main-title">
-                <?= $escaper->escapeHtml($copy->getSplitSignInTitle() ?: __('Sign in to Admin')) ?>
+                <?= $escaper->escapeHtml($copy->getSignInTitle() ?: __('Sign in to Admin')) ?>
             </h2>
             <p class="adminpasskey-login-page__main-subtitle">
                 <?= $escaper->escapeHtml(
-                    $copy->getSplitSignInSubtitle()
+                    $copy->getSignInSubtitle()
                         ?: __('Use a passkey, or your Magento admin credentials.')
                 ) ?>
             </p>
@@ -87,7 +68,7 @@ $iconChevron = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stro
                     <span class="adminpasskey-login-page__passkey-card-copy">
                         <strong><?= $escaper->escapeHtml(__('Sign in with a passkey')) ?></strong>
                         <small><?= $escaper->escapeHtml(
-                            $copy->getSplitPasskeySubtitle()
+                            $copy->getPasskeySubtitle()
                                 ?: __('Passwordless — no username or password')
                         ) ?></small>
                     </span>

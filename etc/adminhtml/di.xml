@@ -39,6 +39,22 @@
         to the module's own routes (which the policy always exempts). Keeping the
         native login/logout open guarantees an admin can always escape onboarding.
     -->
+    <!--
+        Render the pre-auth login page in a visitor-appropriate language (auto
+        from the browser, or a forced deployed locale). Signed-in admins keep
+        their own Interface Locale.
+    -->
+    <type name="Magento\Backend\Model\Locale\Resolver">
+        <plugin name="falconmedia_adminpasskey_login_locale"
+                type="FalconMedia\AdminPasskey\Plugin\Backend\Locale\LoginLocale"
+                sortOrder="10"/>
+    </type>
+    <!-- Lazy Auth\Session (proxy) so the locale resolver has no construction cycle. -->
+    <type name="FalconMedia\AdminPasskey\Plugin\Backend\Locale\LoginLocale">
+        <arguments>
+            <argument name="authSession" xsi:type="object">Magento\Backend\Model\Auth\Session\Proxy</argument>
+        </arguments>
+    </type>
     <type name="FalconMedia\AdminPasskey\Model\Onboarding\OnboardingPolicy">
         <arguments>
             <argument name="alwaysAllowedActions" xsi:type="array">

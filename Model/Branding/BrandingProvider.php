@@ -25,7 +25,7 @@ use Magento\Store\Model\StoreManagerInterface;
  */
 class BrandingProvider
 {
-    public const DEFAULT_COMPANY_NAME = 'FalconMedia';
+    public const DEFAULT_COMPANY_NAME = 'Falcon Media';
     public const DEFAULT_SUPPORT_EMAIL = 'support@falconmedia.nl';
     public const DEFAULT_SUPPORT_URL = 'https://falconmedia.nl/support';
     public const DEFAULT_DOCUMENTATION_URL = 'https://falconmedia.nl/docs/admin-passkey';

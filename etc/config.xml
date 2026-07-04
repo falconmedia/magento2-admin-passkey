@@ -11,41 +11,21 @@
         <adminpasskey>
             <general>
                 <enabled>1</enabled>
+                <login_language>auto</login_language>
             </general>
             <authentication_policy>
                 <passkey_first_login>1</passkey_first_login>
                 <password_fallback_enabled>1</password_fallback_enabled>
                 <two_fa_fallback_enabled>1</two_fa_fallback_enabled>
             </authentication_policy>
+            <!-- Login design copy fields ship empty: the templates fall back to
+                 their translatable __() defaults when a field is left blank. Only
+                 the layout selector keeps a default. -->
             <login_design>
                 <layout>spotlight</layout>
             </login_design>
-            <login_design_spotlight>
-                <passkey_headline>Passwordless sign-in</passkey_headline>
-                <passkey_description>No username needed. Authenticate with Touch ID, Face ID, or your hardware security key.</passkey_description>
-                <passkey_button_label>Continue with passkey</passkey_button_label>
-                <password_two_fa_notice>You'll confirm with 2FA in the next step.</password_two_fa_notice>
-            </login_design_spotlight>
-            <login_design_split_console>
-                <brand_headline>eCommerce</brand_headline>
-                <brand_highlight>Dashboard</brand_highlight>
-                <brand_description>Centralised control for your Magento 2 store — sales, catalog, customers and configuration from one hardened interface.</brand_description>
-                <sign_in_title>Sign in to Admin</sign_in_title>
-                <sign_in_subtitle>Use a passkey, or your Magento admin credentials.</sign_in_subtitle>
-                <passkey_subtitle>Passwordless — no username or password</passkey_subtitle>
-                <password_two_fa_notice>Next: two-factor verification with your authenticator app.</password_two_fa_notice>
-            </login_design_split_console>
-            <login_design_command_deck>
-                <stage_headline>eCommerce Management Dashboard</stage_headline>
-                <stage_description>Sign in to operate your Magento 2 estate. Live platform health shown below.</stage_description>
-                <auth_label>Authentication Required</auth_label>
-                <sign_in_title>Sign in</sign_in_title>
-                <passkey_subtitle>Passwordless · no username</passkey_subtitle>
-                <password_two_fa_notice>Two-factor verification required next step.</password_two_fa_notice>
-                <footer_text>Protected by multi-factor authentication</footer_text>
-            </login_design_command_deck>
             <webauthn>
-                <relying_party_name>FalconMedia Admin Passkey</relying_party_name>
+                <relying_party_name>Falcon Media - Magento2 AdminPasskey</relying_party_name>
                 <user_verification>preferred</user_verification>
                 <resident_key>preferred</resident_key>
                 <ceremony_timeout_ms>60000</ceremony_timeout_ms>
@@ -122,7 +102,7 @@
             </fail2ban>
             <branding>
                 <enabled>1</enabled>
-                <company_name>FalconMedia</company_name>
+                <company_name>Falcon Media</company_name>
                 <primary_accent_color>#f26322</primary_accent_color>
                 <secondary_accent_color>#2563eb</secondary_accent_color>
             </branding>

@@ -54,6 +54,7 @@ body.apk-wiz-page {
     align-items: center;
     justify-content: center;
     padding: 32px;
+    overflow-y: auto;
 }
 
 .apk-wiz__modal {
@@ -508,11 +509,27 @@ body.apk-wiz-page {
 }
 
 @media (max-width: 620px) {
+    .apk-wiz__center {
+        padding: 16px;
+        align-items: flex-start;
+    }
+
     .apk-wiz__inner {
         padding: 28px 22px 24px;
     }
 
     .apk-wiz__prog-label {
         display: none;
+    }
+
+    .apk-wiz__title {
+        font-size: 20px;
+    }
+}
+
+/* Short viewports: let a tall modal scroll instead of clipping. */
+@media (max-height: 680px) {
+    .apk-wiz__center {
+        align-items: flex-start;
     }
 }
