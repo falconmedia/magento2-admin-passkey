@@ -112,3 +112,7 @@ php vendor/bin/phpcbf --standard=app/code/FalconMedia/AdminPasskey/phpcs.xml.dis
 ## License
 
 MIT. Copyright (c) FalconMedia. See [LICENSE](LICENSE).
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
