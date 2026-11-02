@@ -18,7 +18,13 @@
         "magento/module-backend": "*",
         "magento/module-user": "*",
         "magento/module-ui": "*",
-        "magento/module-two-factor-auth": "*"
+        "magento/module-two-factor-auth": "*",
+        "magento/module-config": "*",
+        "magento/module-store": "*",
+        "magento/module-media-storage": "*",
+        "magento/module-security": "*",
+        "2tvenom/cborencode": "^1.0",
+        "enshrined/svg-sanitize": "^0.22 || ^1.0"
     },
     "autoload": {
         "files": [

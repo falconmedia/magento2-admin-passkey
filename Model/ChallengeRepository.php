@@ -72,11 +72,32 @@ class ChallengeRepository implements ChallengeRepositoryInterface
      */
     public function consume(int $entityId): ChallengeInterface
     {
-        $challenge = $this->getById($entityId);
-        $challenge->setStatus(ChallengeInterface::STATUS_CONSUMED);
-        $challenge->setConsumedAt($this->dateTime->gmtDate());
+        try {
+            $affected = $this->resource->getConnection()->update(
+                $this->resource->getMainTable(),
+                [
+                    ChallengeInterface::STATUS => ChallengeInterface::STATUS_CONSUMED,
+                    ChallengeInterface::CONSUMED_AT => $this->dateTime->gmtDate(),
+                ],
+                [
+                    ChallengeInterface::ENTITY_ID . ' = ?' => $entityId,
+                    ChallengeInterface::STATUS . ' = ?' => ChallengeInterface::STATUS_PENDING,
+                ]
+            );
+        } catch (\Throwable $e) {
+            throw new CouldNotSaveException(
+                __('Could not consume challenge: %1', $e->getMessage()),
+                $e instanceof \Exception ? $e : null
+            );
+        }
 
-        return $this->save($challenge);
+        if ((int) $affected !== 1) {
+            // Either unknown, or another request consumed it first (replay race).
+            $this->getById($entityId);
+            throw new CouldNotSaveException(__('The challenge with id "%1" is no longer pending.', $entityId));
+        }
+
+        return $this->getById($entityId);
     }
 
     /**

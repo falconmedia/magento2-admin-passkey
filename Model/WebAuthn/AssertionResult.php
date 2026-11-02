@@ -23,7 +23,8 @@ class AssertionResult
     public function __construct(
         private readonly bool $verified,
         private readonly int $adminUserId,
-        private readonly string $credentialId
+        private readonly string $credentialId,
+        private readonly bool $userVerified = false
     ) {
     }
 
@@ -55,5 +56,18 @@ class AssertionResult
     public function getCredentialId(): string
     {
         return $this->credentialId;
+    }
+
+    /**
+     * Whether the authenticator reported user verification (UV flag: PIN or biometrics).
+     *
+     * Only a user-verified assertion is multi-factor (possession + knowledge/inherence)
+     * and may therefore stand in for Magento 2FA.
+     *
+     * @return bool
+     */
+    public function isUserVerified(): bool
+    {
+        return $this->userVerified;
     }
 }

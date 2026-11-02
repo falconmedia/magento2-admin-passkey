@@ -195,10 +195,24 @@ define(['jquery'], function ($) {
         });
 
         $root.on('click', '[data-action="create"]', function () {
+            var $password = $root.find('[data-role="password"]'),
+                password = $password.val() || '';
+
             setStatus('');
+
+            if (!password) {
+                setStatus(config.labels.passwordRequired, true);
+                $password.addClass('is-error').trigger('focus');
+                return;
+            }
+
+            $password.removeClass('is-error');
             setWaiting(true);
 
-            post(config.registerOptionsUrl, {}).done(function (optionsResponse) {
+            post(config.registerOptionsUrl, {password: password}).done(function (optionsResponse) {
+                // Never keep the password around longer than the step-up request.
+                $password.val('');
+
                 if (!optionsResponse || !optionsResponse.success) {
                     setWaiting(false);
                     setStatus((optionsResponse && optionsResponse.message) || config.labels.registerFailed, true);
@@ -225,6 +239,7 @@ define(['jquery'], function ($) {
                     setStatus(config.labels.registerFailed, true);
                 });
             }).fail(function () {
+                $password.val('');
                 setWaiting(false);
                 setStatus(config.labels.registerFailed, true);
             });

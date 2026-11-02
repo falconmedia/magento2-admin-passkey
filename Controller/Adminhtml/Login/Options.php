@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace FalconMedia\AdminPasskey\Controller\Adminhtml\Login;
 
 use FalconMedia\AdminPasskey\Controller\Adminhtml\AbstractPasskeyJsonAction;
+use FalconMedia\AdminPasskey\Model\Config\ConfigProvider;
 use FalconMedia\AdminPasskey\Model\Endpoint\JsonPayloadFactory;
 use FalconMedia\AdminPasskey\Model\Login\RateLimiterInterface;
 use FalconMedia\AdminPasskey\Model\WebAuthn\AssertionChallengeServiceInterface;
@@ -44,7 +45,8 @@ class Options extends AbstractPasskeyJsonAction implements HttpPostActionInterfa
         JsonPayloadFactory $jsonPayload,
         LoggerInterface $appLogger,
         private readonly AssertionChallengeServiceInterface $assertionChallengeService,
-        private readonly RateLimiterInterface $rateLimiter
+        private readonly RateLimiterInterface $rateLimiter,
+        private readonly ConfigProvider $configProvider
     ) {
         parent::__construct($context, $resultJsonFactory, $formKeyValidator, $remoteAddress, $jsonPayload, $appLogger);
     }
@@ -54,6 +56,10 @@ class Options extends AbstractPasskeyJsonAction implements HttpPostActionInterfa
      */
     protected function handle(): array
     {
+        if (!$this->configProvider->isEnabled()) {
+            return $this->jsonPayload->error((string) __('Passkeys are disabled.'));
+        }
+
         $remoteIp = $this->getRemoteIp();
         $bucket = self::RATE_LIMIT_PREFIX . ($remoteIp ?? 'unknown');
 

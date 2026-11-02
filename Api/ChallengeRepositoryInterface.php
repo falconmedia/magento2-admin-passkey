@@ -38,12 +38,16 @@ interface ChallengeRepositoryInterface
     public function getById(int $entityId): ChallengeInterface;
 
     /**
-     * Consume a challenge (mark consumed) by row ID.
+     * Atomically consume a pending challenge (mark consumed) by row ID.
+     *
+     * Implemented as a conditional UPDATE (status pending -> consumed), so when
+     * two requests race on the same challenge only one of them can win; the loser
+     * gets a CouldNotSaveException.
      *
      * @param int $entityId
      * @return ChallengeInterface
      * @throws NoSuchEntityException
-     * @throws CouldNotSaveException
+     * @throws CouldNotSaveException When the challenge is not (or no longer) pending.
      */
     public function consume(int $entityId): ChallengeInterface;
 

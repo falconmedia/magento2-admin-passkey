@@ -25,7 +25,8 @@ use Magento\MediaStorage\Model\File\UploaderFactory;
  *
  * Restricts uploads to a small set of safe raster/vector formats and, for SVG
  * files, rejects any markup that could execute script or pull in external
- * content before the native uploader stores the file under media/adminpasskey.
+ * content, then replaces the upload with the allowlist-sanitized markup before
+ * the native uploader stores the file under media/adminpasskey.
  */
 class BrandingImage extends Image
 {
@@ -82,7 +83,10 @@ class BrandingImage extends Image
             $name = strtolower((string) $file['name']);
             $tmpName = (string) $file['tmp_name'];
             if ($tmpName !== '' && str_ends_with($name, '.svg')) {
-                $this->svgSanitizer->assertSafe($this->fileDriver->fileGetContents($tmpName));
+                $original = $this->fileDriver->fileGetContents($tmpName);
+                $this->svgSanitizer->assertSafe($original);
+                // Store the allowlist-sanitized markup, never the uploaded bytes.
+                $this->fileDriver->filePutContents($tmpName, $this->svgSanitizer->sanitize($original));
             }
         }
 

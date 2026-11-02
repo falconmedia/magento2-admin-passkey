@@ -103,6 +103,67 @@ class CredentialRepository implements CredentialRepositoryInterface
     /**
      * @inheritdoc
      */
+    public function updateSignCount(int $entityId, int $newSignCount, string $lastUsedAt): bool
+    {
+        try {
+            $connection = $this->resource->getConnection();
+            $where = [
+                CredentialInterface::ENTITY_ID . ' = ?' => $entityId,
+                CredentialInterface::STATUS . ' = ?' => CredentialInterface::STATUS_ACTIVE,
+            ];
+            if ($newSignCount === 0) {
+                $where[CredentialInterface::SIGN_COUNT . ' = ?'] = 0;
+            } else {
+                $where[CredentialInterface::SIGN_COUNT . ' < ?'] = $newSignCount;
+            }
+
+            $affected = $connection->update(
+                $this->resource->getMainTable(),
+                [
+                    CredentialInterface::SIGN_COUNT => $newSignCount,
+                    CredentialInterface::LAST_USED_AT => $lastUsedAt,
+                ],
+                $where
+            );
+        } catch (\Throwable $e) {
+            throw new CouldNotSaveException(
+                __('Could not update passkey sign count: %1', $e->getMessage()),
+                $e instanceof \Exception ? $e : null
+            );
+        }
+
+        if ((int) $affected === 1) {
+            return true;
+        }
+
+        // MySQL reports changed rows, not matched rows: a counter-less authenticator
+        // (0 -> 0) used twice within the same second changes nothing. Accept it when
+        // the row still matches; concurrent replays are already stopped by the
+        // atomic challenge consume.
+        return $newSignCount === 0 && $this->isActiveWithZeroCounter($entityId);
+    }
+
+    /**
+     * Whether the credential row is active and still has a zero sign counter.
+     *
+     * @param int $entityId
+     * @return bool
+     */
+    private function isActiveWithZeroCounter(int $entityId): bool
+    {
+        $connection = $this->resource->getConnection();
+        $select = $connection->select()
+            ->from($this->resource->getMainTable(), [CredentialInterface::ENTITY_ID])
+            ->where(CredentialInterface::ENTITY_ID . ' = ?', $entityId)
+            ->where(CredentialInterface::STATUS . ' = ?', CredentialInterface::STATUS_ACTIVE)
+            ->where(CredentialInterface::SIGN_COUNT . ' = ?', 0);
+
+        return $connection->fetchOne($select) !== false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function revoke(int $entityId): CredentialInterface
     {
         $credential = $this->getById($entityId);

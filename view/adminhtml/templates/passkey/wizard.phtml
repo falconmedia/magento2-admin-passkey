@@ -107,9 +107,16 @@ $check = static function (int $size, string $stroke, float $sw = 2.4): string {
                         </div>
                         <h2 class="apk-wiz__title"><?= $escaper->escapeHtml(__('Create your passkey')) ?></h2>
                         <p class="apk-wiz__text">
-                            <?= $escaper->escapeHtml(__('Select "Create Passkey" and follow your browser prompt to'
-                                . ' register this device.')) ?>
+                            <?= $escaper->escapeHtml(__('Confirm your current password, then select "Create Passkey"'
+                                . ' and follow your browser prompt to register this device.')) ?>
                         </p>
+                        <div class="apk-wiz__field">
+                            <label class="apk-wiz__label" for="apk-wiz-password">
+                                <?= $escaper->escapeHtml(__('Confirm your current password')) ?>
+                            </label>
+                            <input type="password" id="apk-wiz-password" class="apk-wiz__input" data-role="password"
+                                   autocomplete="current-password" required/>
+                        </div>
                         <div class="apk-wiz__actions">
                             <button type="button" class="apk-wiz__btn apk-wiz__btn--primary" data-action="create">
                                 <span class="apk-wiz__spinner" data-role="spinner" hidden></span>

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace FalconMedia\AdminPasskey\Controller\Adminhtml\Login;
 
 use FalconMedia\AdminPasskey\Controller\Adminhtml\AbstractPasskeyJsonAction;
+use FalconMedia\AdminPasskey\Model\Config\ConfigProvider;
 use FalconMedia\AdminPasskey\Model\Auth\AdminSessionCreatorInterface;
 use FalconMedia\AdminPasskey\Model\Endpoint\JsonPayloadFactory;
 use FalconMedia\AdminPasskey\Model\Lockout\LockoutManagerInterface;
@@ -67,7 +68,8 @@ class Verify extends AbstractPasskeyJsonAction implements HttpPostActionInterfac
         private readonly LoginAttemptRecorderInterface $loginAttemptRecorder,
         private readonly RateLimiterInterface $rateLimiter,
         private readonly LockoutManagerInterface $lockoutManager,
-        private readonly Json $json
+        private readonly Json $json,
+        private readonly ConfigProvider $configProvider
     ) {
         parent::__construct($context, $resultJsonFactory, $formKeyValidator, $remoteAddress, $jsonPayload, $appLogger);
     }
@@ -77,6 +79,10 @@ class Verify extends AbstractPasskeyJsonAction implements HttpPostActionInterfac
      */
     protected function handle(): array
     {
+        if (!$this->configProvider->isEnabled()) {
+            return $this->jsonPayload->error((string) __('Passkeys are disabled.'));
+        }
+
         $remoteIp = $this->getRemoteIp();
         $bucket = self::RATE_LIMIT_PREFIX . ($remoteIp ?? 'unknown');
 
@@ -106,7 +112,7 @@ class Verify extends AbstractPasskeyJsonAction implements HttpPostActionInterfac
         try {
             $result = $this->assertionVerificationService->verify($assertion, $remoteIp);
             $adminUserId = $result->getAdminUserId();
-            $this->adminSessionCreator->login($adminUserId);
+            $this->adminSessionCreator->login($adminUserId, $result->isUserVerified());
         } catch (WebAuthnVerificationException | AuthenticationException $e) {
             $this->loginAttemptRecorder->recordFailure(
                 null,
