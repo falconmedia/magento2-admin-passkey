@@ -54,6 +54,21 @@ interface CredentialRepositoryInterface
     public function listActiveForAdmin(int $adminUserId): CredentialSearchResultsInterface;
 
     /**
+     * Atomically store a new sign count and last-used timestamp.
+     *
+     * The row is only updated when the stored counter is lower than the new one,
+     * or when both are zero (authenticators that do not implement a counter), so a
+     * replayed or concurrently submitted assertion cannot advance the counter twice.
+     *
+     * @param int $entityId Credential row ID.
+     * @param int $newSignCount Counter reported by the authenticator.
+     * @param string $lastUsedAt UTC datetime (Y-m-d H:i:s).
+     * @return bool True when exactly one row was updated.
+     * @throws CouldNotSaveException
+     */
+    public function updateSignCount(int $entityId, int $newSignCount, string $lastUsedAt): bool;
+
+    /**
      * Revoke a credential by row ID.
      *
      * @param int $entityId

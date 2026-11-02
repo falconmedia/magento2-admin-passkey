@@ -69,13 +69,15 @@ class AssertionVerificationServiceTest extends TestCase
         $this->credentialRepository->method('getByCredentialId')->willReturn($credential);
 
         $this->credentialRepository->expects($this->once())
-            ->method('save')
+            ->method('updateSignCount')
+            ->with(101, 2, '2026-07-02 12:00:00')
             ->willReturnCallback(
-                function (CredentialInterface $saved): CredentialInterface {
+                function (): bool {
                     $this->assertTrue($this->challengeConsumed, 'Challenge must be consumed before verifying signature');
-                    return $saved;
+                    return true;
                 }
             );
+        $this->credentialRepository->expects($this->never())->method('save');
         $this->auditLogger->expects($this->once())
             ->method('record')
             ->with(AuditLoggerInterface::EVENT_PASSKEY_LOGIN, $this->anything());
@@ -87,6 +89,29 @@ class AssertionVerificationServiceTest extends TestCase
         $this->assertSame($this->vectors->getCredentialId(), $result->getCredentialId());
         $this->assertSame(2, $credential->getSignCount(), 'Sign count must be updated on success');
         $this->assertNotNull($credential->getLastUsedAt(), 'last_used_at must be updated on success');
+        $this->assertTrue($result->isUserVerified(), 'Default test vector carries the UV flag');
+    }
+
+    public function testMissingUserVerificationIsExposedOnResult(): void
+    {
+        // Preferred policy: a UV-less assertion is accepted, but must not count as multi-factor.
+        $this->credentialRepository->method('getByCredentialId')->willReturn($this->activeCredential(1));
+        $this->credentialRepository->method('updateSignCount')->willReturn(true);
+
+        $result = $this->service->verify($this->vectors->assertion(self::CHALLENGE, ['signCount' => 2, 'uv' => false]));
+
+        $this->assertFalse($result->isUserVerified());
+    }
+
+    public function testConcurrentSignCountUpdateLosesRace(): void
+    {
+        // Another request already advanced the counter: the conditional UPDATE matches no row.
+        $this->credentialRepository->method('getByCredentialId')->willReturn($this->activeCredential(1));
+        $this->credentialRepository->expects($this->once())->method('updateSignCount')->willReturn(false);
+
+        $this->expectException(WebAuthnVerificationException::class);
+        $this->expectExceptionMessage('The passkey sign counter is invalid.');
+        $this->service->verify($this->vectors->assertion(self::CHALLENGE, ['signCount' => 2]));
     }
 
     public function testUnknownCredentialRejected(): void
@@ -131,7 +156,7 @@ class AssertionVerificationServiceTest extends TestCase
     public function testInvalidSignatureRejectedAfterChallengeConsumed(): void
     {
         $this->credentialRepository->method('getByCredentialId')->willReturn($this->activeCredential(1));
-        $this->credentialRepository->expects($this->never())->method('save');
+        $this->credentialRepository->expects($this->never())->method('updateSignCount');
 
         try {
             $this->service->verify($this->vectors->assertion(self::CHALLENGE, ['tamperSignature' => true]));
@@ -176,7 +201,9 @@ class AssertionVerificationServiceTest extends TestCase
     {
         $credential = $this->activeCredential(0);
         $this->credentialRepository->method('getByCredentialId')->willReturn($credential);
-        $this->credentialRepository->expects($this->once())->method('save');
+        $this->credentialRepository->expects($this->once())->method('updateSignCount')
+            ->with(101, 0, $this->anything())
+            ->willReturn(true);
 
         $result = $this->service->verify($this->vectors->assertion(self::CHALLENGE, ['signCount' => 0]));
 

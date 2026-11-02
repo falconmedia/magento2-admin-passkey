@@ -67,39 +67,24 @@ class LockoutManager implements LockoutManagerInterface
                 return;
             }
 
+            // Each identity dimension (account, username, IP) keeps its own counter
+            // row. Rows never mix identities, so releasing an account/username row
+            // on success can never reset the IP counter (and vice versa).
             $now = $this->now();
-            $row = $this->findTrackingRow($adminUserId, $username, $ip);
-            $wasLocked = false;
-            $previousFailed = 0;
-
-            if ($row !== null) {
-                $previousFailed = (int) $row->getFailedAttempts();
-                $wasLocked = $this->evaluator->isCurrentlyLocked($row->getStatus(), $row->getLockedUntil(), $now);
-                if ($this->evaluator->isWithinWindow((string) $row->getCreatedAt(), $now, $this->windowMinutes())) {
-                    $failed = $previousFailed + 1;
-                } else {
-                    $failed = 1;
-                    $previousFailed = 0;
-                    $wasLocked = false;
-                    $row->setCreatedAt($now);
-                    $row->setLockedUntil(null);
-                }
-            } else {
-                $row = $this->createTrackingRow($adminUserId, $username, $ip);
-                $failed = 1;
+            $eventsEmitted = false;
+            foreach ($this->dimensions($adminUserId, $username, $ip) as [$dimAdminId, $dimUsername, $dimIp]) {
+                $eventsEmitted = $this->trackDimension(
+                    $dimAdminId,
+                    $dimUsername,
+                    $dimIp,
+                    $now,
+                    $method,
+                    $eventsEmitted,
+                    $adminUserId,
+                    $username,
+                    $ip
+                ) || $eventsEmitted;
             }
-
-            $row->setFailedAttempts($failed);
-            $row->setReason(self::REASON_TRACKING);
-
-            $maxAttempts = $this->configProvider->getMaxFailedAttempts();
-            if ($this->evaluator->shouldLock($failed, $maxAttempts)) {
-                $this->applyLock($row, $now, $failed, $previousFailed, $wasLocked, $adminUserId, $username, $ip, $method);
-
-                return;
-            }
-
-            $this->lockoutRepository->save($row);
         } catch (\Throwable $e) {
             $this->logger->error('AdminPasskey lockout handling failed: ' . $e->getMessage());
         }
@@ -115,14 +100,16 @@ class LockoutManager implements LockoutManagerInterface
                 return;
             }
 
-            $row = $this->findTrackingRow($adminUserId, $username, $ip);
-            if ($row === null) {
-                return;
+            // Only release rows tied to the authenticated identity itself. The IP is
+            // deliberately ignored: otherwise an attacker could reset an IP lockout
+            // (built up by guessing other accounts) by signing in with their own
+            // low-privilege account from that IP.
+            $now = $this->now();
+            foreach ($this->identityRows($adminUserId, $username) as $row) {
+                $row->setStatus(LockoutInterface::STATUS_RELEASED);
+                $row->setUnlockedAt($now);
+                $this->lockoutRepository->save($row);
             }
-
-            $row->setStatus(LockoutInterface::STATUS_RELEASED);
-            $row->setUnlockedAt($this->now());
-            $this->lockoutRepository->save($row);
         } catch (\Throwable $e) {
             $this->logger->error('AdminPasskey lockout reset failed: ' . $e->getMessage());
         }
@@ -206,7 +193,9 @@ class LockoutManager implements LockoutManagerInterface
     }
 
     /**
-     * Find an existing active tracking/lockout row for the strongest available identity.
+     * Find the active tracking/lockout row of one identity dimension.
+     *
+     * Called with exactly one of the three identifiers set (see dimensions()).
      *
      * @param int|null $adminUserId
      * @param string|null $username
@@ -279,6 +268,111 @@ class LockoutManager implements LockoutManagerInterface
         }
 
         return array_values($rows);
+    }
+
+    /**
+     * The single-identity dimensions to track for a failed attempt.
+     *
+     * @param int|null $adminUserId
+     * @param string|null $username
+     * @param string|null $ip
+     * @return array<int, array{0: int|null, 1: string|null, 2: string|null}>
+     */
+    private function dimensions(?int $adminUserId, ?string $username, ?string $ip): array
+    {
+        $dimensions = [];
+        if ($adminUserId !== null && $adminUserId > 0) {
+            $dimensions[] = [$adminUserId, null, null];
+        }
+        if ($username !== null && $username !== '') {
+            $dimensions[] = [null, $username, null];
+        }
+        if ($ip !== null && $ip !== '') {
+            $dimensions[] = [null, null, $ip];
+        }
+
+        return $dimensions;
+    }
+
+    /**
+     * Count one failure on the row of a single dimension, locking it at the threshold.
+     *
+     * @param int|null $dimAdminId
+     * @param string|null $dimUsername
+     * @param string|null $dimIp
+     * @param string $now
+     * @param string $method
+     * @param bool $eventsEmitted Whether lockout events were already emitted for this attempt.
+     * @param int|null $adminUserId Original attempt identity (for audit/Fail2Ban).
+     * @param string|null $username
+     * @param string|null $ip
+     * @return bool Whether this call emitted lockout events.
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     */
+    private function trackDimension(
+        ?int $dimAdminId,
+        ?string $dimUsername,
+        ?string $dimIp,
+        string $now,
+        string $method,
+        bool $eventsEmitted,
+        ?int $adminUserId,
+        ?string $username,
+        ?string $ip
+    ): bool {
+        $row = $this->findTrackingRow($dimAdminId, $dimUsername, $dimIp);
+        $wasLocked = false;
+        $previousFailed = 0;
+
+        if ($row !== null) {
+            $previousFailed = (int) $row->getFailedAttempts();
+            $wasLocked = $this->evaluator->isCurrentlyLocked($row->getStatus(), $row->getLockedUntil(), $now);
+            if ($this->evaluator->isWithinWindow((string) $row->getCreatedAt(), $now, $this->windowMinutes())) {
+                $failed = $previousFailed + 1;
+            } else {
+                $failed = 1;
+                $previousFailed = 0;
+                $wasLocked = false;
+                $row->setCreatedAt($now);
+                $row->setLockedUntil(null);
+            }
+        } else {
+            $row = $this->createTrackingRow($dimAdminId, $dimUsername, $dimIp);
+            $failed = 1;
+        }
+
+        $row->setFailedAttempts($failed);
+        $row->setReason(self::REASON_TRACKING);
+
+        if ($this->evaluator->shouldLock($failed, $this->configProvider->getMaxFailedAttempts())) {
+            if ($eventsEmitted) {
+                // Lock silently: the audit/Fail2Ban events for this attempt were already written.
+                $wasLocked = true;
+                $previousFailed = $failed;
+            }
+            $this->applyLock($row, $now, $failed, $previousFailed, $wasLocked, $adminUserId, $username, $ip, $method);
+
+            return !$eventsEmitted;
+        }
+
+        $this->lockoutRepository->save($row);
+
+        return false;
+    }
+
+    /**
+     * Collect the active rows for an admin id and/or username, never by IP.
+     *
+     * A row is only returned when it actually belongs to that identity, so a
+     * shared row that merely matched on IP is never released by a success.
+     *
+     * @param int|null $adminUserId
+     * @param string|null $username
+     * @return LockoutInterface[]
+     */
+    private function identityRows(?int $adminUserId, ?string $username): array
+    {
+        return $this->candidateRows($adminUserId, $username, null);
     }
 
     /**

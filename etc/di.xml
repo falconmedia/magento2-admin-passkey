@@ -120,6 +120,30 @@
     <!-- Admin login flow bindings (Admin UI only; not web-exposed). -->
     <preference for="FalconMedia\AdminPasskey\Model\Auth\AdminSessionCreatorInterface"
                 type="FalconMedia\AdminPasskey\Model\Auth\AdminSessionCreator"/>
+    <!--
+        Enforce "Password fallback: No" for every username/password authentication
+        of an admin user, including the admin REST token endpoints (web API area).
+        The Admin login form is additionally covered on Backend Auth::login().
+    -->
+    <type name="Magento\User\Model\User">
+        <plugin name="falconmedia_adminpasskey_enforce_password_fallback_policy"
+                type="FalconMedia\AdminPasskey\Plugin\Backend\Auth\EnforcePasswordFallbackPolicy"
+                sortOrder="10"/>
+    </type>
+    <!--
+        Magento_Security services are proxied: they are only touched when the
+        module is enabled, and their own DI preferences are absent when it is not.
+    -->
+    <type name="FalconMedia\AdminPasskey\Model\Auth\NativeLoginGuard">
+        <arguments>
+            <argument name="userExpirationManager" xsi:type="object">Magento\Security\Model\UserExpirationManager\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="FalconMedia\AdminPasskey\Model\Auth\NativeLoginRecorder">
+        <arguments>
+            <argument name="adminSessionsManager" xsi:type="object">Magento\Security\Model\AdminSessionsManager\Proxy</argument>
+        </arguments>
+    </type>
     <preference for="FalconMedia\AdminPasskey\Model\Login\LoginAttemptRecorderInterface"
                 type="FalconMedia\AdminPasskey\Model\Login\LoginAttemptRecorder"/>
     <preference for="FalconMedia\AdminPasskey\Model\Login\RateLimiterInterface"

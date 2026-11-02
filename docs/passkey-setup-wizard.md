@@ -20,7 +20,9 @@ Click **Get started** to continue.
 
 ## Step 2 — Register
 
-The browser WebAuthn ceremony runs. Follow the OS or browser prompt to create a credential on the chosen authenticator.
+Confirm your current Admin password, then click **Create Passkey**. The browser WebAuthn ceremony runs. Follow the OS or browser prompt to create a credential on the chosen authenticator.
+
+The password confirmation is a step-up check: an active session alone can never enrol a passkey, so a hijacked session cannot add a backdoor. The confirmation is valid for one registration (at most 5 minutes); wrong passwords count towards the [account lockout](lockout.md). After every new passkey the account owner receives a security-alert email.
 
 ## Step 3 — Name it
 

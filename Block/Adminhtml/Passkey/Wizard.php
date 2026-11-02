@@ -101,6 +101,7 @@ class Wizard extends Template
                     'registerFailed' => (string) __('The passkey could not be registered. Please try again.'),
                     'renameFailed' => (string) __('The passkey name could not be saved. Please try again.'),
                     'nameRequired' => (string) __('Please enter a name for this passkey.'),
+                    'passwordRequired' => (string) __('Please confirm your current password to register a passkey.'),
                 ],
             ],
         ]);

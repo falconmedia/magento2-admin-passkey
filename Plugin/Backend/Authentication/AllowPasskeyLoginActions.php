@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace FalconMedia\AdminPasskey\Plugin\Backend\Authentication;
 
+use FalconMedia\AdminPasskey\Model\Config\ConfigProvider;
 use Magento\Backend\App\AbstractAction;
 use Magento\Backend\App\Action\Plugin\Authentication;
 use Magento\Framework\App\Request\Http as HttpRequest;
@@ -33,7 +34,8 @@ use Magento\Framework\App\RequestInterface;
  *
  * The whitelisted controllers still enforce their own protections (form-key CSRF,
  * per-IP rate limiting, WebAuthn verification), so opening the route does not
- * weaken security. Only the two pre-auth login endpoints are ever whitelisted;
+ * weaken security. Only the two pre-auth login endpoints are ever whitelisted,
+ * and only while the module is enabled (general/enabled);
  * the registration endpoints stay behind the normal Admin session + ACL check.
  *
  * @internal Admin-only support; not part of a public web API contract.
@@ -41,9 +43,11 @@ use Magento\Framework\App\RequestInterface;
 class AllowPasskeyLoginActions
 {
     /**
+     * @param ConfigProvider $configProvider
      * @param string[] $openActions Full action names (routeId_controller_action) to open pre-auth.
      */
     public function __construct(
+        private readonly ConfigProvider $configProvider,
         private readonly array $openActions = []
     ) {
     }
@@ -65,7 +69,8 @@ class AllowPasskeyLoginActions
         \Closure $dispatchProceed,
         RequestInterface $request
     ) {
-        if ($this->isOpenAction($request)) {
+        // When the module is disabled the endpoints are not opened at all.
+        if ($this->isOpenAction($request) && $this->configProvider->isEnabled()) {
             // Mirror the native open-action behaviour: mark dispatched and run the
             // controller directly, skipping the not-logged-in login redirect.
             $request->setDispatched(true);

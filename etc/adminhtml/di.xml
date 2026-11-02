@@ -26,13 +26,17 @@
                 sortOrder="10"/>
     </type>
     <!--
-        Block native password login while the account/IP is locked out. The check
-        fails open and is suppressed while emergency recovery mode is active.
+        Block native password login while the account/IP is locked out (fails open,
+        suppressed in recovery mode), and enforce "Password fallback: No" on the
+        server instead of only hiding the form.
     -->
     <type name="Magento\Backend\Model\Auth">
         <plugin name="falconmedia_adminpasskey_block_locked_admin_login"
                 type="FalconMedia\AdminPasskey\Plugin\Backend\Auth\BlockLockedAdminLogin"
                 sortOrder="20"/>
+        <plugin name="falconmedia_adminpasskey_enforce_password_fallback_policy"
+                type="FalconMedia\AdminPasskey\Plugin\Backend\Auth\EnforcePasswordFallbackPolicy"
+                sortOrder="10"/>
     </type>
     <!--
         Actions that must never be redirected to the onboarding wizard, in addition

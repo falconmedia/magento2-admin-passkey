@@ -10,6 +10,7 @@ namespace FalconMedia\AdminPasskey\Test\Integration\Model;
 use FalconMedia\AdminPasskey\Api\ChallengeRepositoryInterface;
 use FalconMedia\AdminPasskey\Api\Data\ChallengeInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\User\Model\User;
 use PHPUnit\Framework\TestCase;
@@ -86,5 +87,23 @@ class ChallengeRepositoryTest extends TestCase
 
         $deleted = $this->repository->deleteExpired();
         $this->assertGreaterThanOrEqual(1, $deleted);
+    }
+
+    public function testSecondConsumeOfSameChallengeFails(): void
+    {
+        /** @var ChallengeInterface $challenge */
+        $challenge = Bootstrap::getObjectManager()->create(ChallengeInterface::class);
+        $challenge->setAdminUserId($this->adminUserId)
+            ->setChallenge('challenge-value-race')
+            ->setChallengeType(ChallengeInterface::TYPE_ASSERTION)
+            ->setStatus(ChallengeInterface::STATUS_PENDING)
+            ->setExpiresAt(gmdate('Y-m-d H:i:s', time() + 300));
+        $entityId = (int) $this->repository->save($challenge)->getId();
+
+        $this->repository->consume($entityId);
+
+        // A replayed/concurrent request holding the same (stale) pending row must lose.
+        $this->expectException(CouldNotSaveException::class);
+        $this->repository->consume($entityId);
     }
 }

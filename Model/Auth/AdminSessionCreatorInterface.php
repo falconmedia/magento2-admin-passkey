@@ -26,16 +26,21 @@ interface AdminSessionCreatorInterface
     /**
      * Log the given admin user in and regenerate the session id (fixation defence).
      *
-     * The native {@see \Magento\Backend\Model\Auth\Session::processLogin()} is used,
-     * which calls regenerateId(), reloads the ACL and renews secret URLs, then the
-     * standard backend_auth_user_login_success event is dispatched so native
-     * observers (admin session tracking, 2FA enforcement) run unchanged.
+     * Applies the same account checks as a native password login (active, role,
+     * native lock, user expiration, module lockout), then uses the native
+     * {@see \Magento\Backend\Model\Auth\Session::processLogin()} (regenerateId(),
+     * ACL reload, secret URL renewal), records the login, registers the
+     * Magento_Security admin session and dispatches backend_auth_user_login_success.
+     *
+     * Magento 2FA is only satisfied by the passkey when $userVerified is true
+     * (authenticator UV flag); otherwise the native 2FA challenge still follows.
      *
      * @param int $adminUserId Verified Magento admin user id.
+     * @param bool $userVerified Whether the assertion carried the UV flag.
      * @return void
-     * @throws AuthenticationException When the user does not exist or is inactive.
+     * @throws AuthenticationException When the user may not sign in.
      */
-    public function login(int $adminUserId): void;
+    public function login(int $adminUserId, bool $userVerified = false): void;
 
     /**
      * Resolve the URL to redirect to after a successful login.

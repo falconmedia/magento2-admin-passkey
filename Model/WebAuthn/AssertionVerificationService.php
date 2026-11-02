@@ -114,7 +114,12 @@ class AssertionVerificationService implements AssertionVerificationServiceInterf
 
         $this->updateOnSuccess($credential, $authenticatorData->getSignCount());
 
-        return new AssertionResult(true, (int) $credential->getAdminUserId(), $credentialId);
+        return new AssertionResult(
+            true,
+            (int) $credential->getAdminUserId(),
+            $credentialId,
+            $authenticatorData->isUserVerified()
+        );
     }
 
     /**
@@ -244,7 +249,11 @@ class AssertionVerificationService implements AssertionVerificationServiceInterf
     }
 
     /**
-     * Persist the new sign count and last-used timestamp after a valid assertion.
+     * Atomically persist the new sign count and last-used timestamp after a valid assertion.
+     *
+     * The update is conditional on the stored counter still being lower than the
+     * new one (or both being zero), so two concurrent assertions carrying the same
+     * counter cannot both succeed.
      *
      * @param CredentialInterface $credential
      * @param int $newSignCount
@@ -253,14 +262,24 @@ class AssertionVerificationService implements AssertionVerificationServiceInterf
      */
     private function updateOnSuccess(CredentialInterface $credential, int $newSignCount): void
     {
-        $credential->setSignCount($newSignCount);
-        $credential->setLastUsedAt($this->dateTime->gmtDate());
+        $entityId = $credential->getId();
+        if ($entityId === null) {
+            throw new WebAuthnVerificationException(__('The passkey login could not be completed.'));
+        }
 
+        $lastUsedAt = $this->dateTime->gmtDate();
         try {
-            $this->credentialRepository->save($credential);
+            $updated = $this->credentialRepository->updateSignCount((int) $entityId, $newSignCount, $lastUsedAt);
         } catch (\Throwable $e) {
             throw new WebAuthnVerificationException(__('The passkey login could not be completed.'), $e);
         }
+
+        if (!$updated) {
+            throw new WebAuthnVerificationException(__('The passkey sign counter is invalid.'));
+        }
+
+        $credential->setSignCount($newSignCount);
+        $credential->setLastUsedAt($lastUsedAt);
     }
 
     /**

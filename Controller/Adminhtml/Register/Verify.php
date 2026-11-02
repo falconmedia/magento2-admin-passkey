@@ -8,7 +8,10 @@ declare(strict_types=1);
 namespace FalconMedia\AdminPasskey\Controller\Adminhtml\Register;
 
 use FalconMedia\AdminPasskey\Controller\Adminhtml\AbstractPasskeyJsonAction;
+use FalconMedia\AdminPasskey\Model\Config\ConfigProvider;
 use FalconMedia\AdminPasskey\Model\Endpoint\JsonPayloadFactory;
+use FalconMedia\AdminPasskey\Model\Passkey\RegistrationNotifier;
+use FalconMedia\AdminPasskey\Model\Passkey\RegistrationStepUp;
 use FalconMedia\AdminPasskey\Model\WebAuthn\Exception\WebAuthnVerificationException;
 use FalconMedia\AdminPasskey\Model\WebAuthn\RegistrationVerificationServiceInterface;
 use Magento\Backend\App\Action\Context;
@@ -26,6 +29,10 @@ use Psr\Log\LoggerInterface;
  * attestation via {@see RegistrationVerificationServiceInterface} and persists the
  * credential for the currently authenticated admin only (the service also audits
  * the outcome). Reused by the Step 12 setup wizard and profile management UI.
+ *
+ * Requires the step-up grant issued by the options endpoint (password re-entry);
+ * the grant is single-use. Every new passkey triggers a security-alert email to
+ * the account owner.
  *
  * @internal Admin-only support; not part of a public web API contract.
  */
@@ -59,7 +66,10 @@ class Verify extends AbstractPasskeyJsonAction implements HttpPostActionInterfac
         JsonPayloadFactory $jsonPayload,
         LoggerInterface $appLogger,
         private readonly RegistrationVerificationServiceInterface $registrationVerificationService,
-        private readonly Json $json
+        private readonly Json $json,
+        private readonly ConfigProvider $configProvider,
+        private readonly RegistrationStepUp $stepUp,
+        private readonly RegistrationNotifier $registrationNotifier
     ) {
         parent::__construct($context, $resultJsonFactory, $formKeyValidator, $remoteAddress, $jsonPayload, $appLogger);
     }
@@ -69,7 +79,18 @@ class Verify extends AbstractPasskeyJsonAction implements HttpPostActionInterfac
      */
     protected function handle(): array
     {
-        $adminUserId = (int) $this->_auth->getUser()->getId();
+        if (!$this->configProvider->isEnabled()) {
+            return $this->jsonPayload->error((string) __('Passkeys are disabled.'));
+        }
+
+        $user = $this->_auth->getUser();
+        $adminUserId = (int) $user->getId();
+
+        if (!$this->stepUp->isGranted($adminUserId)) {
+            return $this->jsonPayload->error(
+                (string) __('Please confirm your current password to register a passkey.')
+            );
+        }
 
         $attestation = $this->readCredential();
         if ($attestation === null) {
@@ -87,6 +108,10 @@ class Verify extends AbstractPasskeyJsonAction implements HttpPostActionInterfac
             // non-sensitive verification message is safe to surface here.
             return $this->jsonPayload->error((string) $e->getMessage());
         }
+
+        // Single-use grant: another passkey needs a fresh password confirmation.
+        $this->stepUp->revoke();
+        $this->registrationNotifier->notify($user);
 
         return $this->jsonPayload->success([
             'credentialId' => $credential->getCredentialId(),

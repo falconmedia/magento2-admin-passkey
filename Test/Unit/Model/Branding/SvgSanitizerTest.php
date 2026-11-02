@@ -12,7 +12,7 @@ use Magento\Framework\Exception\LocalizedException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Pure unit test for the SVG upload safety validator.
+ * Unit test for the SVG upload sanitizer (requires enshrined/svg-sanitize).
  */
 class SvgSanitizerTest extends TestCase
 {
@@ -30,6 +30,22 @@ class SvgSanitizerTest extends TestCase
 
         $this->assertTrue($this->sanitizer->isSafe($svg));
         $this->sanitizer->assertSafe($svg);
+    }
+
+    public function testAcceptsInternalReferencesAndUtf8Bom(): void
+    {
+        $svg = "\xEF\xBB\xBF" . '<?xml version="1.0" encoding="UTF-8"?>'
+            . '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">'
+            . '<defs><linearGradient id="g"/></defs><use xlink:href="#g"/><rect fill="url(#g)"/></svg>';
+
+        $this->assertTrue($this->sanitizer->isSafe($svg));
+        $this->assertStringContainsString('<svg', $this->sanitizer->sanitize($svg));
+    }
+
+    public function testSanitizeThrowsOnUnparsableMarkup(): void
+    {
+        $this->expectException(LocalizedException::class);
+        $this->sanitizer->sanitize('not an svg');
     }
 
     /**
@@ -63,6 +79,15 @@ class SvgSanitizerTest extends TestCase
             'entity' => ['<!ENTITY xxe SYSTEM "file:///etc/passwd"><svg></svg>'],
             'javascript uri' => ['<svg><a xlink:href="javascript:alert(1)">x</a></svg>'],
             'iframe' => ['<svg><iframe src="https://evil.example"></iframe></svg>'],
+            'slash onload (no whitespace)' => ['<svg/onload=alert(1)>'],
+            'quote-adjacent onclick' => ['<svg><rect x="1"onclick="x()"/></svg>'],
+            'entity encoded javascript' => ['<svg><a href="&#106;avascript:alert(1)">x</a></svg>'],
+            'double entity encoded javascript' => ['<svg><a href="&amp;#106;avascript:alert(1)">x</a></svg>'],
+            'tab inside javascript' => ['<svg><a href="java&#9;script:alert(1)">x</a></svg>'],
+            'utf-16 encoded' => [mb_convert_encoding('<svg onload="alert(1)"></svg>', 'UTF-16')],
+            'non utf-8 declaration' => ['<?xml version="1.0" encoding="ISO-8859-1"?><svg></svg>'],
+            'remote use reference' => ['<svg><use href="https://evil.example/x.svg#a"/></svg>'],
+            'style import' => ['<svg><style>@import url(https://evil.example/x.css);</style></svg>'],
         ];
     }
 }

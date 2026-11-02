@@ -7,7 +7,10 @@ declare(strict_types=1);
 
 namespace FalconMedia\AdminPasskey\Test\Unit\Plugin\Backend\Authentication;
 
+use FalconMedia\AdminPasskey\Model\Config\ConfigProvider;
 use FalconMedia\AdminPasskey\Plugin\Backend\Authentication\AllowPasskeyLoginActions;
+use Magento\Backend\App\AbstractAction;
+use Magento\Backend\App\Action\Plugin\Authentication;
 use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\App\RequestInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,7 +27,10 @@ class AllowPasskeyLoginActionsTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->plugin = new AllowPasskeyLoginActions(self::OPEN_ACTIONS);
+        $this->plugin = new AllowPasskeyLoginActions(
+            $this->createMock(ConfigProvider::class),
+            self::OPEN_ACTIONS
+        );
     }
 
     /**
@@ -70,6 +76,51 @@ class AllowPasskeyLoginActionsTest extends TestCase
             'audit grid must stay behind ACL' => ['adminpasskey_audit_index'],
             'unrelated admin action' => ['adminhtml_dashboard_index'],
         ];
+    }
+
+    public function testOpenActionBypassesLoginRedirectWhenModuleEnabled(): void
+    {
+        $plugin = $this->pluginWithEnabled(true);
+        $request = $this->createHttpRequest('adminpasskey_login_options');
+        $nativeCalled = false;
+
+        $result = $plugin->aroundAroundDispatch(
+            $this->createMock(Authentication::class),
+            function () use (&$nativeCalled) {
+                $nativeCalled = true;
+                return 'native';
+            },
+            $this->createMock(AbstractAction::class),
+            fn () => 'controller',
+            $request
+        );
+
+        $this->assertSame('controller', $result);
+        $this->assertFalse($nativeCalled);
+    }
+
+    public function testOpenActionKeepsNativeAuthWhenModuleDisabled(): void
+    {
+        $plugin = $this->pluginWithEnabled(false);
+        $request = $this->createHttpRequest('adminpasskey_login_verify');
+
+        $result = $plugin->aroundAroundDispatch(
+            $this->createMock(Authentication::class),
+            fn () => 'native',
+            $this->createMock(AbstractAction::class),
+            fn () => 'controller',
+            $request
+        );
+
+        $this->assertSame('native', $result);
+    }
+
+    private function pluginWithEnabled(bool $enabled): AllowPasskeyLoginActions
+    {
+        $config = $this->createMock(ConfigProvider::class);
+        $config->method('isEnabled')->willReturn($enabled);
+
+        return new AllowPasskeyLoginActions($config, self::OPEN_ACTIONS);
     }
 
     public function testNonHttpRequestIsNeverOpen(): void
