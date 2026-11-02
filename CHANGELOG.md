@@ -6,6 +6,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-02
+
 ### Security
 
 - Passkey login now applies Magento's own account checks: role assigned, native `lock_expires`, Magento_Security user expiration and the module's account lockout. It records the login (logdate/lognum), flags expired passwords and registers the Magento_Security `admin_user_session` (including "terminate other sessions"). (H1, H2)
@@ -19,6 +21,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `composer.json` no longer contains a `version` field; the version comes from the git tag.
 - `composer.json` now requires `2tvenom/cborencode`, `enshrined/svg-sanitize`, `magento/module-config`, `magento/module-store`, `magento/module-media-storage` and `magento/module-security`. (M6)
 - `AdminSessionCreatorInterface::login()` takes a second argument `$userVerified`, and `CredentialRepositoryInterface` gains `updateSignCount()`.
 
@@ -70,5 +73,7 @@ Initial release — enterprise Magento 2 Admin security suite:
 - CLI commands (`adminpasskey:*`)
 - Admin reports and system menu pages
 
+[Unreleased]: https://github.com/falconmedia/magento2-admin-passkey/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/falconmedia/magento2-admin-passkey/releases/tag/v1.1.0
 [1.0.1]: https://github.com/falconmedia/magento2-admin-passkey/releases/tag/v1.0.1
 [1.0.0]: https://github.com/falconmedia/magento2-admin-passkey/releases/tag/v1.0.0
